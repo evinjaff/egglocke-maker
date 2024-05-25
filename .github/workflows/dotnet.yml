@@ -20,11 +20,9 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: 8.0.x
-    - name: Change paths to Tests
-      run: cd pkhex/pkhex-egglocke-tests
     - name: Restore dependencies
-      run: dotnet restore
+      run: dotnet restore pkhex/pkhex-egglocke-tests
     - name: Build
-      run: dotnet build --no-restore
+      run: dotnet build --no-restore pkhex/pkhex-egglocke-tests
     - name: Test
-      run: dotnet test --no-build --verbosity normal
+      run: dotnet test --no-build --verbosity normal pkhex/pkhex-egglocke-tests
