@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34916.146
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "pkhexEgglockeTests", "pkhex-egglocke-tests\pkhexEgglockeTests.csproj", "{173A62FD-78F6-4479-A523-D8C8CF35CAE1}"
+EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "pkhexEgglocke", "..\pkhex-egglocke\pkhex-egglocke\pkhexEgglocke.csproj", "{E41A899E-CE84-4CF8-B9F9-B44AF8487DDB}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{173A62FD-78F6-4479-A523-D8C8CF35CAE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{173A62FD-78F6-4479-A523-D8C8CF35CAE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{173A62FD-78F6-4479-A523-D8C8CF35CAE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{173A62FD-78F6-4479-A523-D8C8CF35CAE1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E41A899E-CE84-4CF8-B9F9-B44AF8487DDB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E41A899E-CE84-4CF8-B9F9-B44AF8487DDB}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E41A899E-CE84-4CF8-B9F9-B44AF8487DDB}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E41A899E-CE84-4CF8-B9F9-B44AF8487DDB}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BF438309-E47F-4108-994C-E3ED9994CBBF}
+	EndGlobalSection
+EndGlobal
