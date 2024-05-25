@@ -18,7 +18,12 @@ namespace pkhexEgglocke
     {
 
         // Internal Variables
-        protected SaveFile? currentSave; 
+        protected SaveFile? currentSave;
+
+        
+        public SaveWriter() { 
+            // as empty constructor, must load a save file or else this class doesn't work
+        }
 
 
         /// <summary>
@@ -33,8 +38,16 @@ namespace pkhexEgglocke
         /// </example>
         /// </summary> 
         public SaveWriter(string savePath) {
-            // Import the save file
-            var sav = SaveUtil.GetVariantSAV(savePath);
+
+            #if DEBUG
+                Console.WriteLine("Reading from ");
+                Console.WriteLine(savePath);
+            #endif
+
+
+            validateConstructor(savePath);
+
+            this.currentSave = SaveUtil.GetVariantSAV(savePath);
 
         }
 
@@ -46,8 +59,35 @@ namespace pkhexEgglocke
 
         // Getters and Setters
 
+        /// <summary>
+        /// Return the OT String of the save file
+        /// </summary>
+        /// <returns>
+        /// 
+        /// </returns>
         public string getOTString() {
-            return "Not Implemented yet";
+            if (currentSave == null)
+            {
+                throw new Exception("OT field in save file is null- possibly corrupted?");
+            }
+            return this.currentSave.OT;
+        }
+
+        // Other utility functions
+
+        public void validateConstructor(string filePath) {
+
+            if (!isFilePathValid(filePath))
+            {
+                throw new Exception("Invalid save file path");
+            }
+
+
+        }
+
+        public bool isFilePathValid(string filePath)
+        {
+            return (File.Exists(filePath));
         }
 
 

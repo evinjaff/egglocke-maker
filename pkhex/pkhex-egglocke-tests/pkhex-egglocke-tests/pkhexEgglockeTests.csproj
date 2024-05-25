@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
     <TargetFramework>net8.0</TargetFramework>
@@ -27,6 +27,12 @@
 
   <ItemGroup>
     <Folder Include="testSources\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="testSources\emptySoulSilver.sav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>
