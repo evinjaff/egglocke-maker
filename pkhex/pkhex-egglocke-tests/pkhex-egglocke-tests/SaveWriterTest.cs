@@ -50,6 +50,16 @@ namespace pkhexEgglockeTests
 
         }
 
+        [TestMethod]
+        public void TestMassAddWorks()
+        {
+            SaveWriter sw = new SaveWriter(testConstants.JOHTO_PLUS_SOUL_SILVER_SAVE);
+
+            sw.massAddEggs(testConstants.BLANK_GEN4_LEGENDARY_TRIO);
+
+
+        }
+
 
     }
 }

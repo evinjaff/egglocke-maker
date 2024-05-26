@@ -22,10 +22,11 @@ class Program {
 
         //Console.WriteLine("Dumped to testPROG.sav!!");
         var BLANK_GEN4_MAREEP_VALID = Path.Combine("C:\\Users\\Evin Jaff\\Documents\\egglocke-maker\\pkhex\\pkhex-egglocke-tests\\pkhex-egglocke-tests\\testSources", "Mareep.json");
+        var BLANK_GEN4_LEGENDARY_TRIO = Path.Combine("C:\\Users\\Evin Jaff\\Documents\\egglocke-maker\\pkhex\\pkhex-egglocke-tests\\pkhex-egglocke-tests\\testSources", "LegendaryTrio.json");
 
-        EggCreator ec = EggCreator.decodeJSON(BLANK_GEN4_MAREEP_VALID);
+        EggCreator ec = EggCreator.decodeJSON(BLANK_GEN4_MAREEP_VALID, true);
 
-        sw.addEgg(ec, 1);
+        sw.massAddEggs(BLANK_GEN4_LEGENDARY_TRIO);
 
         sw.export("testPROG.sav");
 

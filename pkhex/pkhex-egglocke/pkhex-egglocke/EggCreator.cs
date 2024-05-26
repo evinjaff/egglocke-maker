@@ -79,8 +79,16 @@ namespace pkhexEgglocke
         }
 
 
-        public static EggCreator decodeJSON(string filepath) {
-            string json = File.ReadAllText(filepath);
+        public static EggCreator decodeJSON(string filepath, bool is_filepath) {
+            string json;
+            if (is_filepath)
+            {
+                json = File.ReadAllText(filepath);
+            }
+            else { 
+                json = filepath;
+            }
+           
 
             dynamic newObject = JsonConvert.DeserializeObject(json);
 
@@ -121,9 +129,7 @@ namespace pkhexEgglocke
 
         public static ushort[] convertIntArrayViaCast(int[] array)
         {
-
             ushort[] result = new ushort[array.Length];
-
             for (int i = 0; i < result.Length; i++)
             {
                 result[i] = (ushort) array[i];

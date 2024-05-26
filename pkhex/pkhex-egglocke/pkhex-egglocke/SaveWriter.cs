@@ -5,6 +5,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.ConstrainedExecution;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using PKHeX.Core;
 
 [assembly: InternalsVisibleTo("pkhexEgglockeTests")]
@@ -50,6 +51,27 @@ namespace pkhexEgglocke
             this.currentSave = SaveUtil.GetVariantSAV(savePath);
 
         }
+
+        public void massAddEggs(string JSONPath) { 
+        
+            string json = File.ReadAllText(JSONPath);
+
+            dynamic newOject = JsonConvert.DeserializeObject(json);
+
+
+            for (int i=0; i < newOject.Count; i++) {
+
+                string jsonEgg = newOject[i].ToString();
+
+                EggCreator egg = EggCreator.decodeJSON(jsonEgg, false);
+                addEgg(egg, i);
+
+            }
+
+        
+        }
+
+
 
         public void addEgg( EggCreator pokemon, int boxIndex) {
 
