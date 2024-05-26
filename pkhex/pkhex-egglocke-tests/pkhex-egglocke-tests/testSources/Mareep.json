@@ -1,0 +1,15 @@
+{
+  "dexNumber": 179,
+  "ball": 2,
+  "language": 1,
+  "ability":9,
+  "nature": 1,
+  "OT": "Dawn",
+  "OTGender": 1,
+  "nickname": "WLW",
+  "IV": [ 31, 31, 31, 31, 31, 31 ],
+  "EV": [ 0, 0, 0, 0, 0, 0 ],
+  "moves": [ 425, 262 ],
+  "movespp": [ 30, 40 ]
+
+}

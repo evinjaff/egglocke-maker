@@ -12,7 +12,7 @@ namespace pkhexEgglockeTests
         public void TestSaveImportConstructorDoesNotCrashOnValidFile()
         {
 
-            SaveWriter sw = new SaveWriter(testConstants.BLANK_SOULSILVER_SAVE);
+            SaveWriter sw = new SaveWriter(testConstants.JOHTO_PLUS_SOUL_SILVER_SAVE);
 
         }
 
@@ -30,7 +30,7 @@ namespace pkhexEgglockeTests
         public void TestSaveImportOTMatches()
         {
             string expectedOT = testConstants.BLANK_SOULSILVER_OT_STRING;
-            SaveWriter sw = new SaveWriter(testConstants.BLANK_SOULSILVER_SAVE);
+            SaveWriter sw = new SaveWriter(testConstants.JOHTO_PLUS_SOUL_SILVER_SAVE);
             string actualOT = sw.getOTString();
 
             Assert.AreEqual(expectedOT, actualOT);
@@ -42,7 +42,7 @@ namespace pkhexEgglockeTests
         public void TestSaveImportVersionMatches()
         {
             string expectedOT = testConstants.BLANK_SOULSILVER_OT_STRING;
-            SaveWriter sw = new SaveWriter(testConstants.BLANK_SOULSILVER_SAVE);
+            SaveWriter sw = new SaveWriter(testConstants.JOHTO_PLUS_SOUL_SILVER_SAVE);
             string actualOT = sw.getOTString();
 
             Assert.AreEqual(expectedOT, actualOT);

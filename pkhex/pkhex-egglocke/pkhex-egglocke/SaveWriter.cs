@@ -51,9 +51,74 @@ namespace pkhexEgglocke
 
         }
 
+        public void addEgg( EggCreator pokemon, int boxIndex) {
 
-        public void export() {
-            Console.WriteLine("To be Implemented!");
+            // hacky start - hardcoded to box 1
+
+            var mew = new PK4();
+
+            // Standard Egg attributes
+            mew.IsEgg = pokemon.IsEgg;
+            mew.EggLocationDP = pokemon.EggLocationDP;
+            mew.MetLevel = pokemon.MetLevel;
+            mew.Ball = pokemon.ball;
+
+
+            // Pokemon Info
+            mew.Species = pokemon.dexNumber;
+            mew.Nickname = pokemon.nickname;
+            mew.Language = pokemon.language;
+            mew.OriginalTrainerName = pokemon.OT;
+            mew.OriginalTrainerGender = pokemon.OTGender;
+
+
+            mew.Ability = pokemon.Ability;
+            mew.Nature = pokemon.Nature;
+
+            // Moveset
+            mew.Move1 = (int)Move.ShadowSneak;
+            mew.Move1_PP = 30;
+            mew.Move2 = (int)Move.Memento;
+            mew.Move2_PP = 20;
+
+
+            mew.IVs = pokemon.IV;
+
+            var box = this.currentSave.BoxData;
+
+            // Check legality of the pokemon
+
+            LegalityAnalysis legalitychecker = new LegalityAnalysis(mew);
+
+            #if DEBUG
+            if (legalitychecker.Valid)
+            {
+                Console.WriteLine("Legal Egg created!");
+            }
+            else {
+                Console.WriteLine("Illegal Egg Created!");
+            }
+            #endif
+
+            box[boxIndex] = mew;
+
+
+            // update box
+            this.currentSave.BoxData = box;
+
+            // this.currentSave.AddBoxData( , 1, 1 );
+
+            
+        }
+
+
+        public void export(string location) {
+            
+            byte[] modifiedSaveData = this.currentSave.Write();
+        
+            // dump to location
+            File.WriteAllBytes(location, modifiedSaveData);
+
         }
 
 

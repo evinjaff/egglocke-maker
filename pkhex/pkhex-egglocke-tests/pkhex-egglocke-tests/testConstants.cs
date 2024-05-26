@@ -10,12 +10,17 @@ namespace pkhexEgglockeTests
     public static class testConstants
     {
         // Gen 4 - Soul Silver Blank Save File
-        public static string BLANK_SOULSILVER_SAVE => Path.Combine(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"testSources"), "emptySoulSilver.sav");
+        public static string JOHTO_PLUS_SOUL_SILVER_SAVE => Path.Combine(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"testSources"), "emptySoulSilver.sav");
         public static string BLANK_SOULSILVER_OT_STRING => "Egg";
 
+        // Gen 4 - Blank JSON
+        public static string BLANK_GEN4_MAREEP_VALID => Path.Combine(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"testSources"), "Mareep.json");
 
         // Gen 6 - Omega Ruby Save File
         public static string BLANK_OMEGARUBY_SAVE => Path.Combine(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"testSources"), "emptyOmegaRuby.sav");
+
+
+        
 
 
     }
