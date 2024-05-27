@@ -29,10 +29,10 @@ class Pokemon(models.Model):
     pokemon_nature = models.IntegerField(default=1)
     pokemon_OT = models.CharField(max_length=10, default="Red")
     pokemon_OTGender = models.IntegerField(default=1)
-    pokemon_IV = models.JSONField(default=[31, 31, 31, 31, 31, 31])
-    pokemon_EV = models.JSONField(default=[0, 0, 0, 0, 0, 0])
-    pokemon_moves = models.JSONField(default=list())
-    pokemon_movespp = models.JSONField(default=list())
+    pokemon_IV = models.JSONField(default=list([31, 31, 31, 31, 31, 31]))
+    pokemon_EV = models.JSONField(default=list([0, 0, 0, 0, 0, 0]))
+    pokemon_moves = models.JSONField(default=dict)
+    pokemon_movespp = models.JSONField(default=dict)
 
 
     pub_date = models.DateTimeField("date published")

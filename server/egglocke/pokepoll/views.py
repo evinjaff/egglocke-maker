@@ -6,6 +6,10 @@ from django.views import generic
 from django.utils import timezone
 from django import forms
 from django.forms import TextInput, EmailInput
+import json
+# import variables in settings.py
+from django.conf import settings
+from .cachedconstants import MAX_POKEDEX_DICT
 
 # Create your views here.
 from django.urls import reverse
@@ -77,7 +81,8 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
         song_form = PokemonForm()
         return render(request, self.template_name, {
             'submitter_form': submitter_form,
-            'pokemon_form': song_form
+            'pokemon_form': song_form,
+            'max_pokedex_entry': MAX_POKEDEX_DICT[settings.POKEMON_GENERATION],
         })
 
     def post(self, request, *args, **kwargs):
