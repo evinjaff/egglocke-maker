@@ -1,21 +1,39 @@
-<h1>{{ question.question_text }}</h1>
-<ul>
-{% for choice in question.choice_set.all %}
-    <li>{{ choice.choice_text }}</li>
-{% endfor %}
-</ul>
+{% load static %}
+
+<img class="pokemon-sprite" src="img/spriteplaceholder">
+
+<h3 id="pokemon-species"></h3>
+
+{{ pokemon }}
+
+
+<p>Submitted by {{ pokemon.submitter.name }} </p>
 
 <h2>Submissime owo</h2>
 
-<form action="{% url 'pokepoll:vote' question.id %}" method="post">
-    {% csrf_token %}
-    <fieldset>
-        <legend><h1>{{ question.question_text }}</h1></legend>
-        {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
-        {% for choice in question.choice_set.all %}
-            <input type="radio" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
-            <label for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
-        {% endfor %}
-    </fieldset>
-    <input type="submit" value="Vote">
-    </form>
+<!-- Import JQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<!-- Import home-built libraries -->
+<script src="{% static 'pokepoll/pokeapifunctions.js' %}"></script>
+
+<!-- Specific JS Code -->
+<script>
+
+    // set all img tags with the class "pokemon-sprite" to the correct sprite
+    let spriteURL = getPokemonSpriteURL("{{ pokemon.pokemon_species }}");
+    $(".pokemon-sprite").attr("src", spriteURL);
+
+
+    async function populatePokemonName() {
+        let speciesName = await getPokemonNameFromID("{{ pokemon.pokemon_species }}");
+        console.log(speciesName);
+        speciesName = speciesName.charAt(0).toUpperCase() + speciesName.slice(1);
+        $("#pokemon-species").text(speciesName);
+    }
+
+    
+
+    populatePokemonName();
+
+</script>

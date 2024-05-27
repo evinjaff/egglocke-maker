@@ -5,7 +5,10 @@
 <img src="{% static 'pokepoll/img/strawberi.png' %}" width=400>
 
 
-<h3>X Eggs Submitted so far!</h3>
+<h3>{{ num_eggs_submitted }} Eggs Submitted so far!</h3>
 
 
-<a href="">Submit an Egg!</a>
+<a href="{% url 'pokepoll:submit' %}">Submit an egg!</a>
+
+<a href="{% url 'pokepoll:submissions' %}">View Submissions!</a>
+

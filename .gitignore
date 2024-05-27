@@ -398,3 +398,7 @@ FodyWeavers.xsd
 *.sln.iml
 
 server/venv/
+
+.DS_Store
+
+server/egglocke/db.sqlite3
