@@ -69,10 +69,23 @@
 <form method="post" action"/submit/">{% csrf_token %}
 
     <div class="autocomplete" style="width:300px;">
-        <input id="myInput" type="text" name="myCountry" placeholder="Country">
+        <input type="text"
+                id="myInput"
+                name="{{ pokemon_form.pokemon_species.name }}"
+                placeholder="Pokemon Species">
     </div>
+
     
-    {{ pokemon_form.as_p }}
+
+    <p>Nickname (Limit 10 characters) </p>
+
+    <input type="text" 
+               name="{{ pokemon_form.pokemon_nickname.name }}" 
+               id="{{ pokemon_form.pokemon_nickname.id_for_label }}" 
+               class="{{ pokemon_form.pokemon_nickname.field.widget.attrs.class }}" 
+               style="{{ pokemon_form.pokemon_nickname.field.widget.attrs.style }}" 
+               placeholder="{{ pokemon_form.pokemon_nickname.field.widget.attrs.placeholder }}" 
+               value="{{ pokemon_form.pokemon_nickname.value|default_if_none:'' }}">
 
     <input type="checkbox" id="should_validate"> I have submitted a Pokemon before (we we will check if you)
 
@@ -318,7 +331,7 @@ $("#{{ submitter_form.email.id_for_label }}").on("keyup", function() {
 max_pokedex_entry = {{ max_pokedex_entry }};
 
 // Function to fetch and use the JSON data
-async function fetchPokemonNames() {
+async function fetchPokemonNames(max_index) {
     try {
         // Fetch the JSON data from the server
         const response = await fetch('{% static 'pokepoll/all_pokemon_names.json' %}');
@@ -330,7 +343,7 @@ async function fetchPokemonNames() {
         const pokemonNames = await response.json();
         // Now you can use the `pokemonNames` variable which contains the parsed JSON data
         console.log(pokemonNames);
-        return pokemonNames;
+        return pokemonNames.slice(0, max_index);
     } catch (error) {
         console.error('There was a problem with the fetch operation:', error);
         return []
@@ -338,9 +351,25 @@ async function fetchPokemonNames() {
 }
 
 // Call the function to fetch and display Pokémon names
-fetchPokemonNames().then(all_pokemon => {
+fetchPokemonNames(max_pokedex_entry).then(all_pokemon => {
     autocomplete(document.getElementById("myInput"), all_pokemon);
 })
+
+// trap form submission
+form.addEventListener("submit", (event) => {
+    event.preventDefault();
+  
+    const isValid = email.value.length === 0 || emailRegExp.test(email.value);
+    if (!isValid) {
+      email.className = "invalid";
+      error.textContent = "I expect an email, darling!";
+      error.className = "error active";
+    } else {
+      email.className = "valid";
+      error.textContent = "";
+      error.className = "error";
+    }
+  });
 
 
 /*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/

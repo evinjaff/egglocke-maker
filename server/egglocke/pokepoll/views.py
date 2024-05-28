@@ -1,3 +1,4 @@
+import os
 from django.shortcuts import render, get_object_or_404
 from django.template import loader
 from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
@@ -21,6 +22,7 @@ class HomeView(generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["num_eggs_submitted"] = self.get_num_eggs_submitted()
+        context["most_recent_pokemon"] = Pokemon.objects.order_by("-pub_date")[0]
         return context
 
     def get_num_eggs_submitted(self):
@@ -96,6 +98,7 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
 
         # if email is in database
         foreign_key = None
+        pokemon_species = None
 
         if Submitter.objects.filter(email=request.POST.get('email')).exists():
             print("email: {} | ".format(request.POST.get('email')))
@@ -113,14 +116,22 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
             submitter.save()
             foreign_key = submitter.id
 
+        # translate species to pokedex number
+        with open(os.path.join(settings.BASE_DIR, 'pokepoll/static/pokepoll/pokemon_name_to_id.json')) as f:
+            pokedex = json.load(f)
+            if request.POST.get('pokemon_species') in pokedex:
+                pokemon_species = pokedex[request.POST.get('pokemon_species')]
+            else:
+                pokemon_species = None
+
+
         # create a new pokemon
         pokemon = Pokemon(
             pokemon_nickname=request.POST.get('pokemon_nickname'),
-            pokemon_species=request.POST.get('pokemon_species'),
+            pokemon_species=pokemon_species,
             pub_date=timezone.now(),
             submitter_id=foreign_key
         )
-
         pokemon.save()
 
         return HttpResponseRedirect(reverse('pokepoll:home'))

@@ -1,4 +1,3 @@
-import pypokedex
 import json
 
 # Constants
@@ -17,6 +16,9 @@ MAX_POKEDEX_DICT = {
     8: 898,
 }
 
+POKEMON_NAME_TO_ID = {
+}
+
 def import_json(filepath):
     with open(filepath, 'r') as f:
         data = json.load(f)
@@ -32,6 +34,14 @@ def main():
     all_pokemon_names = []
     for pokemon in pokedex:
         all_pokemon_names.append(pokemon['name']["english"])
+
+    # file 2: pokemon_name_to_id.json
+    pokemon_name_to_id = {}
+    for pokemon in pokedex:
+        pokemon_name_to_id[pokemon['name']["english"]] = pokemon['id']
+
+    with open('static/pokepoll/pokemon_name_to_id.json', 'w') as f:
+        json.dump(pokemon_name_to_id, f)
 
     with open('static/pokepoll/all_pokemon_names.json', 'w') as f:
         json.dump(all_pokemon_names, f)
