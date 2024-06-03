@@ -13,6 +13,8 @@ from django.conf import settings
 from .cachedconstants import MAX_POKEDEX_DICT
 from django.views.decorators.http import require_GET, require_POST
 from django.core.cache import cache
+from django_ratelimit.decorators import ratelimit
+from django.utils.decorators import method_decorator
 
 # Create your views here.
 from django.urls import reverse
@@ -31,6 +33,7 @@ def robots_txt_view(request):
             cache.set("robots_txt_content", robots_txt_content, timeout=60 * 60 * 12)
 
     return HttpResponse(robots_txt_content, content_type=content_type)
+
 
 class HomeView(generic.TemplateView):
     template_name = "pokepoll/home.html"
@@ -91,6 +94,8 @@ class SubmitterForm(forms.ModelForm):
                 })
         }
 
+@method_decorator(ratelimit(key='ip', rate='3/m', method='POST', block=True), name='dispatch')
+@method_decorator(ratelimit(key='ip', rate='20/m', method='GET', block=True), name='dispatch')
 class MasterPokemonAndSubmitterView(generic.TemplateView):
     template_name = 'pokepoll/master_submit.html'
 
