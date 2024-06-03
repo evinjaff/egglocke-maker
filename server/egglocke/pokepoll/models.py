@@ -33,6 +33,7 @@ class Pokemon(models.Model):
     pokemon_EV = models.JSONField(default=list([0, 0, 0, 0, 0, 0]))
     pokemon_moves = models.JSONField(default=dict)
     pokemon_movespp = models.JSONField(default=dict)
+    pokemon_held_item = models.IntegerField(default=0)
 
 
     pub_date = models.DateTimeField("date published")

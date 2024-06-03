@@ -75,7 +75,7 @@
                 placeholder="Pokemon Species">
     </div>
 
-    
+
 
     <p>Nickname (Limit 10 characters) </p>
 
@@ -87,7 +87,39 @@
                placeholder="{{ pokemon_form.pokemon_nickname.field.widget.attrs.placeholder }}" 
                value="{{ pokemon_form.pokemon_nickname.value|default_if_none:'' }}">
 
-    <input type="checkbox" id="should_validate"> I have submitted a Pokemon before (we we will check if you)
+    <br>
+
+    <p>Held Item</p>
+
+
+    <br>
+
+    <p> IVs/EVs </p>
+
+    <p>Total EVs: <span id="total-evs">0</span></p>
+
+    <input type="number" name="IV1" id="IV1" placeholder="IV1" min="0" max="31" value="31"> <input type="range" name="EV1" id="EV1" placeholder="EV1" min="0" max="252" value="0">
+    <br>
+    <input type="number" name="IV2" id="IV2" placeholder="IV2" min="0" max="31" value="31"> <input type="range" name="EV2" id="EV2" placeholder="EV2" min="0" max="252" value="0">
+    <br>
+    <input type="number" name="IV3" id="IV3" placeholder="IV3" min="0" max="31" value="31"> <input type="range" name="EV3" id="EV3" placeholder="EV3" min="0" max="252" value="0">
+    <br>
+    <input type="number" name="IV4" id="IV4" placeholder="IV4" min="0" max="31" value="31"> <input type="range" name="EV4" id="EV4" placeholder="EV4" min="0" max="252" value="0">
+    <br>
+    <input type="number" name="IV5" id="IV5" placeholder="IV5" min="0" max="31" value="31"> <input type="range" name="EV5" id="EV5" placeholder="EV5" min="0" max="252" value="0">
+    <br>
+    <input type="number" name="IV6" id="IV6" placeholder="IV6" min="0" max="31" value="31"> <input type="range" name="EV6" id="EV6" placeholder="EV6" min="0" max="252" value="0">
+
+    <br>
+
+    
+    
+    
+    
+    
+    
+
+    <br>
 
     
     <div id="general-email" class="form-group">
@@ -119,6 +151,27 @@
                placeholder="{{ submitter_form.name.field.widget.attrs.placeholder }}" 
                value="{{ submitter_form.name.value|default_if_none:'' }}">
     </div>
+
+    <p>Moveset</p>
+
+    <input type="text" 
+               name="move1"
+               value="( None )"
+    >
+
+    <input type="text" 
+               name="move2"
+               value="( None )"
+    >
+
+    <input type="text" 
+               name="move3"
+               value="( None )"
+    >
+    <input type="text" 
+            name="move4"
+            value="( None )"
+    >
 
 
     <input type="submit" value="Save">
@@ -350,26 +403,68 @@ async function fetchPokemonNames(max_index) {
     }
 }
 
+async function fetchPokemonMoves(max_index){
+    try {
+        // Fetch the JSON data from the server
+        const response = await fetch('{% static 'pokepoll/all_moves.json' %}');
+        // Check if the fetch was successful
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+        // Parse the JSON data
+        const pokemonMoves = await response.json();
+        // Now you can use the `pokemonNames` variable which contains the parsed JSON data
+        console.log(pokemonMoves);
+        return pokemonMoves.slice(0, max_index);
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+        return []
+    }
+}
+
+
 // Call the function to fetch and display Pokémon names
 fetchPokemonNames(max_pokedex_entry).then(all_pokemon => {
     autocomplete(document.getElementById("myInput"), all_pokemon);
 })
 
-// trap form submission
-form.addEventListener("submit", (event) => {
-    event.preventDefault();
-  
-    const isValid = email.value.length === 0 || emailRegExp.test(email.value);
-    if (!isValid) {
-      email.className = "invalid";
-      error.textContent = "I expect an email, darling!";
-      error.className = "error active";
-    } else {
-      email.className = "valid";
-      error.textContent = "";
-      error.className = "error";
-    }
-  });
+fetchPokemonMoves(max_pokedex_entry).then(all_moves => {
+    autocomplete(document.getElementById("move1"), all_moves);
+    autocomplete(document.getElementById("move2"), all_moves);
+    autocomplete(document.getElementById("move3"), all_moves);
+    autocomplete(document.getElementById("move4"), all_moves);
+})
+
+  // Sum EVs
+    let evs = document.querySelectorAll("input[type=range]");
+    let totalEvs = 0;
+    let maxEvs = 510;
+    evs.forEach(ev => {
+        ev.addEventListener("input", function() {
+            totalEvs = 0;
+            evs.forEach(ev => {
+                totalEvs += parseInt(ev.value);
+            });
+
+            if (totalEvs > maxEvs) {
+                document.getElementById("total-evs").style.color = "red";
+                // Force the input back to the Sum
+                ev.value = parseInt(ev.value) - (totalEvs - maxEvs);
+                totalEvs = maxEvs;
+
+                
+            }
+            else {
+                document.getElementById("total-evs").style.color = "black";
+            }
+
+            document.getElementById("total-evs").innerText = totalEvs;
+
+        });
+    });
+
+
+
 
 
 /*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/

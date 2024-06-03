@@ -11,10 +11,26 @@ import json
 # import variables in settings.py
 from django.conf import settings
 from .cachedconstants import MAX_POKEDEX_DICT
+from django.views.decorators.http import require_GET, require_POST
+from django.core.cache import cache
 
 # Create your views here.
 from django.urls import reverse
 from .models import Pokemon, Submitter
+
+@require_GET
+def robots_txt_view(request):
+    robots_txt_path = "pokepoll/support/robots.txt"
+    content_type = "text/plain"
+
+    robots_txt_content = cache.get("robots_txt_content")
+
+    if robots_txt_content is None:
+        with open(os.path.join(settings.BASE_DIR, robots_txt_path)) as f:
+            robots_txt_content = f.read()
+            cache.set("robots_txt_content", robots_txt_content, timeout=60 * 60 * 12)
+
+    return HttpResponse(robots_txt_content, content_type=content_type)
 
 class HomeView(generic.TemplateView):
     template_name = "pokepoll/home.html"
@@ -38,7 +54,7 @@ class IndexView(generic.ListView):
         published in the future).
         """
         return Pokemon.objects.filter(pub_date__lte=timezone.now()).order_by("-pub_date")[
-            :5
+            :50
         ]
 
 
@@ -56,7 +72,7 @@ class ResultsView(generic.DetailView):
 class PokemonForm(forms.ModelForm):
     class Meta:
         model = Pokemon
-        fields = ['pokemon_nickname', 'pokemon_species']
+        fields = ['pokemon_nickname', 'pokemon_species', 'pokemon_ball', 'pokemon_language', 'pokemon_ability', 'pokemon_nature', 'pokemon_OT', 'pokemon_OTGender', 'pokemon_IV', 'pokemon_EV', 'pokemon_moves', 'pokemon_movespp']
 
 class SubmitterForm(forms.ModelForm):
     class Meta:
@@ -99,6 +115,8 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
         # if email is in database
         foreign_key = None
         pokemon_species = None
+        IVs = [31, 31, 31, 31, 31, 31]
+        EVs = [0, 0, 0, 0, 0, 0]
 
         if Submitter.objects.filter(email=request.POST.get('email')).exists():
             print("email: {} | ".format(request.POST.get('email')))
@@ -124,13 +142,27 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
             else:
                 pokemon_species = None
 
+        #IVs
+        # populate IVs with the values from the form
+        for i in range(6):
+            IVs[i] = int(request.POST.get('IV' + str(i + 1)))
+
+        #EVs
+        # populate EVs with the values from the form
+        for i in range(6):
+            EVs[i] = int(request.POST.get('EV' + str(i + 1)))
+
+        # translate moves and movespp to int format
 
         # create a new pokemon
         pokemon = Pokemon(
             pokemon_nickname=request.POST.get('pokemon_nickname'),
             pokemon_species=pokemon_species,
             pub_date=timezone.now(),
-            submitter_id=foreign_key
+            submitter_id=foreign_key,
+            pokemon_IV=IVs,
+            pokemon_EV=EVs
+
         )
         pokemon.save()
 
