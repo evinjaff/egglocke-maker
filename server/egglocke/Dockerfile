@@ -21,9 +21,9 @@ RUN python manage.py migrate
 ENV DEBUG=False
 
 # run debug server
-CMD [ "python", "./manage.py", "runserver", "0.0.0.0:8000" ]
+CMD [ "python", "./manage.py", "runserver", "0.0.0.0:8443" ]
 
-EXPOSE 8000
+EXPOSE 8443
 # debug, expose all ports
-EXPOSE 0-65535
+
 

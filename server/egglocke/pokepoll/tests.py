@@ -6,7 +6,7 @@ from typing import Any
 from django.test import TestCase
 from django.utils import timezone
 from django.urls import reverse
-from .models import Pokemon
+from .models import Pokemon, Submitter
 
 class QuestionModelTests(TestCase):
     def test_was_published_recently_with_future_question(self):
@@ -103,3 +103,79 @@ class QuestionIndexViewTests(TestCase):
             response.context["latest_question_list"],
             [question2, question1],
         )
+
+import random
+
+def create_random_pokemon(override_dict=None):
+    """
+    Create a question with a sample pokemon
+    """
+    time = timezone.now()
+
+    # if an override dictionary is provided, use that to create the pokemon
+    if override_dict:
+        return Pokemon.objects.create(pokemon_nickname=override_dict.get("pokemon_nickname", "Sample"), 
+                                  pub_date=time,
+                                  pokemon_species=override_dict.get("pokemon_species", random.randint(1,151)),
+                                  pokemon_ball=override_dict.get("pokemon_ball", random.randint(1,5)),
+                                    pokemon_language=override_dict.get("pokemon_language", random.randint(1,3)),
+                                    pokemon_ability=override_dict.get("pokemon_ability", random.randint(1,4)),
+                                    pokemon_nature=override_dict.get("pokemon_nature", random.randint(1,25)),
+                                    pokemon_OT=override_dict.get("pokemon_OT", "Red"),
+                                    pokemon_OTGender=override_dict.get("pokemon_OTGender", 1),
+                                    pokemon_IV=override_dict.get("pokemon_IV", [random.randint(0,31) for i in range(6)]),
+                                    pokemon_EV=override_dict.get("pokemon_EV", [random.randint(0,252) for i in range(6)]),
+                                    pokemon_moves=override_dict.get("pokemon_moves", [random.randint(1,826) for i in range(random.randint(1,4))]),
+                                    pokemon_movespp=override_dict.get("pokemon_movespp", [random.randint(1,40) for i in range(random.randint(1,4))]),
+                                    pokemon_held_item=override_dict.get("pokemon_held_item", random.randint(1,5)),
+                                    submitter=Submitter.objects.get(pk=1),
+                                    upvotes=0)
+    else:
+        return Pokemon.objects.create(pokemon_nickname="Sample", 
+                                  pub_date=time,
+                                  pokemon_species=random.randint(1,151),
+                                  pokemon_ball=random.randint(1,5),
+                                    pokemon_language=random.randint(1,3),
+                                    pokemon_ability=random.randint(1,4),
+                                    pokemon_nature=random.randint(1,25),
+                                    pokemon_OT="Red",
+                                    pokemon_OTGender=1,
+                                    pokemon_IV=[random.randint(0,31) for i in range(6)],
+                                    pokemon_EV=[random.randint(0,252) for i in range(6)],
+                                    pokemon_moves=[random.randint(1,826) for i in range(random.randint(1,4))],
+                                    pokemon_movespp=[random.randint(1,40) for i in range(random.randint(1,4))],
+                                    pokemon_held_item=random.randint(1,5),
+                                    submitter=Submitter.objects.get(pk=1),
+                                    upvotes=0)
+
+
+
+class HomeViewTest(TestCase):
+
+    def test_home_view_uses_correct_html_file(self):
+        # add a sample pokemon
+        create_random_pokemon()
+
+        response = self.client.get(reverse("pokepoll:home"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "pokepoll/home.html")
+
+    def test_empty_home_does_not_crash(self):
+        response = self.client.get(reverse("pokepoll:home"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "pokepoll/home.html")
+
+    def test_home_view_with_pokemon_does_not_crash(self):
+        create_random_pokemon()
+        response = self.client.get(reverse("pokepoll:home"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "pokepoll/home.html")
+
+    def test_home_view_shows_most_recent_pokemon(self):
+        create_random_pokemon()
+        create_random_pokemon(override_dict={"pokemon_nickname": "Sample2"})
+
+        response = self.client.get(reverse("pokepoll:home"))
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, "pokepoll/home.html")
+        self.assertContains(response, "Sample2")

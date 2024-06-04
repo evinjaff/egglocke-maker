@@ -41,7 +41,13 @@ class HomeView(generic.TemplateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["num_eggs_submitted"] = self.get_num_eggs_submitted()
-        context["most_recent_pokemon"] = Pokemon.objects.order_by("-pub_date")[0]
+
+        if Pokemon.objects.count() > 0:
+            context["most_recent_pokemon"] = Pokemon.objects.order_by("-pub_date")[0]
+        else:
+            context["most_recent_pokemon"] = None
+
+
         return context
 
     def get_num_eggs_submitted(self):
@@ -93,6 +99,17 @@ class SubmitterForm(forms.ModelForm):
                 'placeholder': 'Email'
                 })
         }
+
+class SaveGenView(generic.TemplateView):
+    # WIP view
+    template_name = "pokepoll/save_gen.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        return context
+
+    def post(self, request, *args, **kwargs):
+        return HttpResponseRedirect(reverse('pokepoll:home'))
 
 @method_decorator(ratelimit(key='ip', rate='3/m', method='POST', block=True), name='dispatch')
 @method_decorator(ratelimit(key='ip', rate='20/m', method='GET', block=True), name='dispatch')

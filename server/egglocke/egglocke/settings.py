@@ -29,7 +29,8 @@ ALLOWED_HOSTS = [
     "20.42.93.202",
     "egglocke.evievi.gay",
     "localhost",
-    "127.0.0.1"
+    "127.0.0.1",
+    "0.0.0.0"
 ]
 
 CSRF_TRUSTED_ORIGINS = [ 
