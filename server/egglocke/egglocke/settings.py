@@ -25,7 +25,17 @@ SECRET_KEY = 'django-insecure-*jj%!hrihqu#16ty75zqz^ue+$q=gbh2za#_tu)if9*!j5!7lz
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "20.42.93.202",
+    "egglocke.evievi.gay",
+    "localhost",
+    "127.0.0.1"
+]
+
+CSRF_TRUSTED_ORIGINS = [ 
+    "https://polite-snails-cross.loca.lt",
+    "https://polite-snails-cross.loca.lt/"
+ ]
 
 
 # Application definition
@@ -122,3 +132,14 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Set up a Cache Backend
+CACHES = {
+    'default': {
+        'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+        'LOCATION': 'unique-snowflake',
+    }
+}
+
+# Custom settings
+POKEMON_GENERATION = 4
