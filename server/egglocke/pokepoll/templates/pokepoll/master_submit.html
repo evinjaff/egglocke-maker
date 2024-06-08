@@ -89,7 +89,24 @@
 
     <br>
 
+    <p> Ability </p>
+
+    <div class="autocomplete" style="width:300px;">
+      <input type="text"
+              id="ability"
+              name="{{ pokemon_form.pokemon_ability.name }}"
+              placeholder="Pokemon Ability">
+    </div>
+
+    <br>
+
     <p>Held Item</p>
+    <div class="autocomplete" style="width:300px;">
+      <input type="text"
+              id="held_item"
+              name="{{ pokemon_form.pokemon_held_item.name }}"
+              placeholder="Held Item">
+    </div>
 
 
     <br>
@@ -182,7 +199,10 @@
 
 <script>
 
-    let validation_state = "loading";
+  // global pokemon generation
+  let POKEMON_GENERATION = {{ pokemon_generation }};
+
+  let validation_state = "loading";
 
 function validate() {
     // if the email is empty, don't validate
@@ -422,46 +442,104 @@ async function fetchPokemonMoves(max_index){
     }
 }
 
+async function fetchHeldItems(max_index){
+  try {
+    // Fetch the JSON data
+    {% with "pokepoll/held_items_to_id_gen_"|add:pokemon_generation|stringformat:"s"|add:".json" as filename %}
+        const response = await fetch("{% static filename %}");
+    {% endwith %}
 
-// Call the function to fetch and display Pokémon names
+        
+
+        // Check if the fetch was successful
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+        // Parse the JSON data
+        const pokemonAbilities = await response.json();
+        // Now you can use the `pokemonNames` variable which contains the parsed JSON data
+        console.log(pokemonAbilities);
+        return Object.keys(pokemonAbilities);
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+        return []
+    }
+
+}
+
+async function fetchPokemonAbilities(max_index){
+    try {
+        // Fetch the JSON data
+    {% with "pokepoll/pokemon_ability_to_id_gen_"|add:pokemon_generation|stringformat:"s"|add:".json" as filename %}
+        const response = await fetch("{% static filename %}");
+    {% endwith %}
+    
+        
+
+        // Check if the fetch was successful
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+        // Parse the JSON data
+        const pokemonAbilities = await response.json();
+        // Now you can use the `pokemonNames` variable which contains the parsed JSON data
+        console.log(pokemonAbilities);
+        return Object.keys(pokemonAbilities);
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+        return []
+    }
+
+}
+
+
+// Register autocomplete listeners onto elements
 fetchPokemonNames(max_pokedex_entry).then(all_pokemon => {
     autocomplete(document.getElementById("myInput"), all_pokemon);
 })
 
-fetchPokemonMoves(max_pokedex_entry).then(all_moves => {
+/* fetchPokemonMoves(max_pokedex_entry).then(all_moves => {
     autocomplete(document.getElementById("move1"), all_moves);
     autocomplete(document.getElementById("move2"), all_moves);
     autocomplete(document.getElementById("move3"), all_moves);
     autocomplete(document.getElementById("move4"), all_moves);
+}) */
+
+fetchPokemonAbilities(max_pokedex_entry).then(all_abilities => {
+    autocomplete(document.getElementById("ability"), all_abilities);
 })
 
-  // Sum EVs
-    let evs = document.querySelectorAll("input[type=range]");
-    let totalEvs = 0;
-    let maxEvs = 510;
-    evs.forEach(ev => {
-        ev.addEventListener("input", function() {
-            totalEvs = 0;
-            evs.forEach(ev => {
-                totalEvs += parseInt(ev.value);
-            });
+fetchHeldItems(max_pokedex_entry).then(all_items => {
+    autocomplete(document.getElementById("held_item"), all_items);
+})
 
-            if (totalEvs > maxEvs) {
-                document.getElementById("total-evs").style.color = "red";
-                // Force the input back to the Sum
-                ev.value = parseInt(ev.value) - (totalEvs - maxEvs);
-                totalEvs = maxEvs;
-
-                
-            }
-            else {
-                document.getElementById("total-evs").style.color = "black";
-            }
-
-            document.getElementById("total-evs").innerText = totalEvs;
-
+// UI code for the IVs and EVs
+let evs = document.querySelectorAll("input[type=range]");
+let totalEvs = 0;
+let maxEvs = 510;
+evs.forEach(ev => {
+    ev.addEventListener("input", function() {
+        totalEvs = 0;
+        evs.forEach(ev => {
+            totalEvs += parseInt(ev.value);
         });
+
+        if (totalEvs > maxEvs) {
+            document.getElementById("total-evs").style.color = "red";
+            // Force the input back to the Sum
+            ev.value = parseInt(ev.value) - (totalEvs - maxEvs);
+            totalEvs = maxEvs;
+
+            
+        }
+        else {
+            document.getElementById("total-evs").style.color = "black";
+        }
+
+        document.getElementById("total-evs").innerText = totalEvs;
+
     });
+});
 
 
 

@@ -143,4 +143,9 @@ CACHES = {
 }
 
 # Custom settings
+
+# MUST be an integer from 1 to 8
 POKEMON_GENERATION = 4
+
+# For building save files, we need to know how to contact the PKHeX microservice - eventually we may just iptable map this to an internal domain (pokepoll.pkhex)
+ADDRESS_OF_PKHEX_MICROSERVICE = "http://10.0.0.2"

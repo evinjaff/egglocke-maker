@@ -10,7 +10,7 @@ from django.forms import TextInput, EmailInput
 import json
 # import variables in settings.py
 from django.conf import settings
-from .cachedconstants import MAX_POKEDEX_DICT
+from .support.cachedconstants import MAX_POKEDEX_DICT
 from django.views.decorators.http import require_GET, require_POST
 from django.core.cache import cache
 from django_ratelimit.decorators import ratelimit
@@ -81,7 +81,7 @@ class ResultsView(generic.DetailView):
 class PokemonForm(forms.ModelForm):
     class Meta:
         model = Pokemon
-        fields = ['pokemon_nickname', 'pokemon_species', 'pokemon_ball', 'pokemon_language', 'pokemon_ability', 'pokemon_nature', 'pokemon_OT', 'pokemon_OTGender', 'pokemon_IV', 'pokemon_EV', 'pokemon_moves', 'pokemon_movespp']
+        fields = ['pokemon_nickname', 'pokemon_species', 'pokemon_ball', 'pokemon_language', 'pokemon_ability', 'pokemon_held_item', 'pokemon_nature', 'pokemon_OT', 'pokemon_OTGender', 'pokemon_IV', 'pokemon_EV', 'pokemon_moves', 'pokemon_movespp']
 
 class SubmitterForm(forms.ModelForm):
     class Meta:
@@ -102,6 +102,8 @@ class SubmitterForm(forms.ModelForm):
 
 class SaveGenView(generic.TemplateView):
     # WIP view
+
+    # eventually, this view will call the PkHex microservice I wrote to generate a save file
     template_name = "pokepoll/save_gen.html"
 
     def get_context_data(self, **kwargs):
@@ -123,6 +125,7 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
             'submitter_form': submitter_form,
             'pokemon_form': song_form,
             'max_pokedex_entry': MAX_POKEDEX_DICT[settings.POKEMON_GENERATION],
+            'pokemon_generation': str(settings.POKEMON_GENERATION)
         })
 
     def post(self, request, *args, **kwargs):
@@ -176,15 +179,45 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
 
         # translate moves and movespp to int format
 
-        # create a new pokemon
-        pokemon = Pokemon(
-            pokemon_nickname=request.POST.get('pokemon_nickname'),
-            pokemon_species=pokemon_species,
-            pub_date=timezone.now(),
-            submitter_id=foreign_key,
-            pokemon_IV=IVs,
-            pokemon_EV=EVs
+        # Abilities
+        # translate ability to int format
+        with open(os.path.join(settings.BASE_DIR, 'pokepoll/static/pokepoll/pokemon_ability_to_id_gen_full.json')) as f:
+            ability_lookup = json.load(f)
+            if request.POST.get('pokemon_ability') in ability_lookup:
+                pokemon_ability = ability_lookup[request.POST.get('pokemon_ability')]
+            else:
+                pokemon_ability = 0
 
+        # Held Item
+        pokemon_held_item = request.POST.get('pokemon_held_item')
+
+        # Translate strings to ints
+        with open(os.path.join(settings.BASE_DIR, 'pokepoll/static/pokepoll/held_items_to_id_gen_{}.json'.format(settings.POKEMON_GENERATION))) as f:
+            item_dex = json.load(f)
+            if pokemon_held_item in item_dex:
+                pokemon_held_item = pokedex[request.POST.get('pokemon_species')]
+            else:
+                pokemon_held_item = 0
+
+
+        
+
+        kw_args = { 'pokemon_nickname': request.POST.get('pokemon_nickname'),
+            'pokemon_species': pokemon_species,
+            'pub_date': timezone.now(),
+            'submitter_id': foreign_key,
+            'pokemon_IV': IVs,
+            'pokemon_EV': EVs,
+            'pokemon_ability': pokemon_ability,
+            'pokemon_held_item': pokemon_held_item,
+        }
+
+        print(kw_args)
+        
+
+        # create a new pokemon passing in the kwargs
+        pokemon = Pokemon(
+            **kw_args
         )
         pokemon.save()
 

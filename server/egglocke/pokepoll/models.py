@@ -45,4 +45,4 @@ class Pokemon(models.Model):
         return now - datetime.timedelta(days=1) <= self.pub_date <= now
 
     def __str__(self):
-        return "{} ({})".format(self.pokemon_nickname, self.pokemon_species)
+        return "{} ({})\nAbility: {}".format(self.pokemon_nickname, self.pokemon_species, self.pokemon_ability)
