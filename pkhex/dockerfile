@@ -1,0 +1,27 @@
+FROM ubuntu:22.04 AS builder
+
+# install the .NET 8 SDK
+RUN apt-get update && apt-get install -y dotnet-sdk-8.0 ca-certificates
+
+# add your application code
+WORKDIR /source
+
+# copy pkhex-egglocke folder to the container
+COPY pkhex-egglocke .
+
+
+# Install pkhex dependency
+RUN dotnet restore pkhex-egglocke
+
+# Compile the app to test
+RUN dotnet build --no-restore pkhex-egglocke
+
+# Publish
+RUN dotnet publish -c release -r linux-x64 --self-contained
+
+
+
+ENV PORT 8080
+EXPOSE 8080
+
+# ENTRYPOINT ["dotnet", "/app/dotnetcoresample.dll"]
