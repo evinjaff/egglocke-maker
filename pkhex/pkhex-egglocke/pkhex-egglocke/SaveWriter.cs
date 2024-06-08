@@ -93,6 +93,9 @@ namespace pkhexEgglocke
             mew.OriginalTrainerName = pokemon.OT;
             mew.OriginalTrainerGender = pokemon.OTGender;
 
+           mew.HeldItem = 
+            
+
 
             mew.Ability = pokemon.Ability;
             mew.Nature = pokemon.Nature;

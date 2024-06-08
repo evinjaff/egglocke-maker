@@ -1,13 +1,26 @@
 ﻿// See https://aka.ms/new-console-template for more information
 
 
+using PKHeX.Core;
 using pkhexEgglocke;
 using System.Reflection;
+using Grapevine;
+using System;
+
+
 
 class Program {
 
     public static void Main(string[] args)
     {
+
+        using (var server = RestServerBuilder.UseDefaults().Build())
+        {
+            server.Start();
+
+            Console.WriteLine("Press enter to stop the server");
+            Console.ReadLine();
+        }
 
         var BLANK_SOULSILVER_SAVE = @"C:\Users\Evin Jaff\Downloads\johtocomplete.sav";
 
