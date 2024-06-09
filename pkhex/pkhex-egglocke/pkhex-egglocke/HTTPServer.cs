@@ -6,10 +6,7 @@ using System.Threading.Tasks;
 
 namespace pkhex_egglocke
 {
-    internal class JSONDecoder
+    internal class HTTPServer
     {
-
-        // Very annoying code that decodes strings to class-defined integers
-
     }
 }

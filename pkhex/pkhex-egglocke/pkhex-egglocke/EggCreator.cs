@@ -80,6 +80,11 @@ namespace pkhexEgglocke
 
 
         public static EggCreator decodeJSON(string filepath, bool is_filepath) {
+            /// <summary>
+            /// decodeJSON: Decodes a JSON object into a PokemonCreator object
+            /// </summary>
+            /// 
+
             string json;
             if (is_filepath)
             {
