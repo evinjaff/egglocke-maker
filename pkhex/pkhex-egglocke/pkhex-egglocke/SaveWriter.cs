@@ -146,6 +146,10 @@ namespace pkhexEgglocke
 
         }
 
+        public byte[] exportRawBytes() { 
+            return this.currentSave.Write();
+        }
+
 
         // Getters and Setters
 
