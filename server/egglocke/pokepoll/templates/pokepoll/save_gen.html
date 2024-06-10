@@ -1,0 +1,27 @@
+{% load static %}
+
+<img class="pokemon-sprite" src="{% static 'pokepoll/img/placeholdersprite.png' %}">
+
+
+<h2>Request a Save File</h2>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Save">
+
+</form>
+
+
+<h2>Submissime owo</h2>
+
+<!-- Import JQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<!-- Import home-built libraries -->
+<script src="{% static 'pokepoll/pokeapifunctions.js' %}"></script>
+
+<!-- Specific JS Code -->
+<script>
+
+</script>

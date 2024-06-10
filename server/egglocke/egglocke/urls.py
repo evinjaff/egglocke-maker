@@ -22,4 +22,5 @@ urlpatterns = [
     path("pokepoll/", include("pokepoll.urls")),
     path('admin/', admin.site.urls),
     path("robots.txt", robots_txt_view),
+    path('captcha/', include('captcha.urls')),
 ]

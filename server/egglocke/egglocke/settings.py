@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'captcha',
 ]
 
 MIDDLEWARE = [
@@ -148,4 +149,6 @@ CACHES = {
 POKEMON_GENERATION = 4
 
 # For building save files, we need to know how to contact the PKHeX microservice - eventually we may just iptable map this to an internal domain (pokepoll.pkhex)
-ADDRESS_OF_PKHEX_MICROSERVICE = "http://10.0.0.2"
+MICROSERVICE_URLS = {
+    "savefile": "http://10.0.0.2"
+}

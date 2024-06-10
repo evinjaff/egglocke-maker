@@ -10,11 +10,13 @@ from django.forms import TextInput, EmailInput
 import json
 # import variables in settings.py
 from django.conf import settings
+import requests
 from .support.cachedconstants import MAX_POKEDEX_DICT
 from django.views.decorators.http import require_GET, require_POST
 from django.core.cache import cache
 from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
+from captcha.fields import CaptchaField
 
 # Create your views here.
 from django.urls import reverse
@@ -100,18 +102,39 @@ class SubmitterForm(forms.ModelForm):
                 })
         }
 
-class SaveGenView(generic.TemplateView):
-    # WIP view
+class CaptchaTestForm(forms.Form):
+    captcha = CaptchaField()
+    
+    pokemon_game = forms.ChoiceField(choices=( 
+    ("1", "Pokemon Soul Silver"), 
+    ("2", "Pokemon Heart Gold"), 
+    ("3", "Pokemon Platinum"), 
+    ("4", "Pokemon Diamond"), 
+    ("5", "Pokemon Pearl"),
+    ))
+    
+    num_eggs = forms.IntegerField(min_value=1, max_value=50)
 
-    # eventually, this view will call the PkHex microservice I wrote to generate a save file
-    template_name = "pokepoll/save_gen.html"
+    
+def saveGenView(request):
+    if request.POST:
+        form = CaptchaTestForm(request.POST)
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        return context
+        # Validate the form: the captcha field will automatically
+        # check the input
+        if form.is_valid():
+            # call the microservice internally
+            savefile_results = requests.post(settings.MICROSERVICE_URLS['savefile'], json={
+                'pokemon_game': form.cleaned_data['pokemon_game'],
+                'num_eggs': form.cleaned_data['num_eggs']
+            })
+            
 
-    def post(self, request, *args, **kwargs):
-        return HttpResponseRedirect(reverse('pokepoll:home'))
+    else:
+        form = CaptchaTestForm()
+
+    return render(request, 'pokepoll/save_gen.html', {'form': form})
+
 
 @method_decorator(ratelimit(key='ip', rate='3/m', method='POST', block=True), name='dispatch')
 @method_decorator(ratelimit(key='ip', rate='20/m', method='GET', block=True), name='dispatch')
