@@ -1,4 +1,5 @@
 django
 mysqlclient
+requests
 django-ratelimit
 django-simple-captcha

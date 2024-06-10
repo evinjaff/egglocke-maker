@@ -16,11 +16,14 @@ class Program {
 
         RestServerBuilder restServerBuilder = RestServerBuilder.UseDefaults();
 
-        
+        // host on 0.0.0.0
+
 
         // Spin up the REST server
         using (var server = RestServerBuilder.UseDefaults().Build())
         {
+            server.Prefixes.Add("http://*:8080/");
+
             server.Start();
 
             Console.WriteLine("Press enter to stop the server");
@@ -30,6 +33,7 @@ class Program {
             while (true) { }
 
         }
+        
 
         var BLANK_SOULSILVER_SAVE = @"C:\Users\Evin Jaff\Downloads\johtocomplete.sav";
 

@@ -123,15 +123,42 @@ def saveGenView(request):
         # Validate the form: the captcha field will automatically
         # check the input
         if form.is_valid():
-            # get n random eggs
-            
+            # get 5 eggs from the database
+            five_eggs = Pokemon.objects.order_by('-pub_date')[:1]
 
+            # create a list of dictionaries to hold the egg data
+            egg_data = []
+            for egg in five_eggs:
+                egg_data.append(
+                {
+                    "dexNumber": egg.pokemon_species,
+                    "ball": 2,
+                    "language": 1,
+                    "ability": egg.pokemon_ability,
+                    "nature": 1,
+                    "OT": egg.pokemon_OT,
+                    "OTGender": 1,
+                    "nickname": egg.pokemon_nickname,
+                    "IV": [ 31, 31, 31, 31, 31, 31 ],
+                    "EV": [ 0, 0, 0, 0, 0, 0 ],
+                    "moves": [ 425, 262 ],
+                    "movespp": [ 30, 40 ]
+
+                })
+
+
+            api_endpoint = settings.MICROSERVICE_URLS['savefile'] + "api/buildSaveFile"
+            request_body = {
+                "generation": 4,
+                "eggs": egg_data
+            }
+
+            print("Calling {}".format(api_endpoint))
+            print("Request data: {}".format(request_body))
             # call the microservice internally
-            savefile_results = requests.post(settings.MICROSERVICE_URLS['savefile'], json={
-                'pokemon_game': form.cleaned_data['pokemon_game'],
-                'num_eggs': form.cleaned_data['num_eggs']
-            })
+            savefile_results = requests.post(api_endpoint, json=request_body)
 
+            print("Response: {}".format(savefile_results.text))
             # return the save file
             return HttpResponse(savefile_results.content, content_type='application/octet-stream')
             
