@@ -93,6 +93,9 @@ namespace pkhexEgglocke
             mew.OriginalTrainerName = pokemon.OT;
             mew.OriginalTrainerGender = pokemon.OTGender;
 
+           mew.HeldItem = 
+            
+
 
             mew.Ability = pokemon.Ability;
             mew.Nature = pokemon.Nature;
@@ -141,6 +144,10 @@ namespace pkhexEgglocke
             // dump to location
             File.WriteAllBytes(location, modifiedSaveData);
 
+        }
+
+        public byte[] exportRawBytes() { 
+            return this.currentSave.Write();
         }
 
 
