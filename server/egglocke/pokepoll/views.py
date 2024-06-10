@@ -123,11 +123,17 @@ def saveGenView(request):
         # Validate the form: the captcha field will automatically
         # check the input
         if form.is_valid():
+            # get n random eggs
+            
+
             # call the microservice internally
             savefile_results = requests.post(settings.MICROSERVICE_URLS['savefile'], json={
                 'pokemon_game': form.cleaned_data['pokemon_game'],
                 'num_eggs': form.cleaned_data['num_eggs']
             })
+
+            # return the save file
+            return HttpResponse(savefile_results.content, content_type='application/octet-stream')
             
 
     else:
