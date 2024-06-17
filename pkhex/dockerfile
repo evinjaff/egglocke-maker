@@ -9,7 +9,6 @@ WORKDIR /source
 # copy pkhex-egglocke folder to the container
 COPY pkhex-egglocke .
 
-
 # Install pkhex dependency
 RUN dotnet restore pkhex-egglocke
 

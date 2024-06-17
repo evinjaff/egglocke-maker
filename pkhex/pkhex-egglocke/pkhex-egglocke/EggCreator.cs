@@ -85,6 +85,9 @@ namespace pkhexEgglocke
             /// </summary>
             /// 
 
+            Console.WriteLine("filepath: ");
+            Console.WriteLine(filepath);
+
             string json;
             if (is_filepath)
             {
@@ -94,8 +97,10 @@ namespace pkhexEgglocke
                 json = filepath;
             }
            
-
+            
             dynamic newObject = JsonConvert.DeserializeObject(json);
+
+            Console.WriteLine("Successfully deserialized JSON!");
 
             Nature nature = lookupNatureInt((int) newObject.nature.Value);
 
@@ -105,15 +110,28 @@ namespace pkhexEgglocke
             int[] moves = newObject.moves.ToObject<int[]>();
             int[] movespp = newObject.movespp.ToObject<int[]>();
 
+
+            byte ball = (byte) newObject.ball;
+            ushort dexNumber = (ushort) newObject.dexNumber;
+            int language = (int) newObject.language;
+            int ability = (int) newObject.ability;
+
+            string OT = newObject.OT;
+            byte OTGender = (byte) newObject.OTGender;
+            string nickname = newObject.nickname;
+
+            // Print EggCreator args
+
+
             return new EggCreator(
-                newObject.ball,
-                newObject.dexNumber,
-                newObject.language,
-                newObject.ability,
+                ball,
+                dexNumber,
+                language,
+                ability,
                 nature,
-                newObject.OT,
-                newObject.OTGender,
-                newObject.nickname,
+                OT,
+                OTGender,
+                nickname,
                 IV,
                 EV,
                 convertIntArrayViaCast(moves),

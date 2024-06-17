@@ -153,6 +153,13 @@ def saveGenView(request):
                 "eggs": egg_data
             }
 
+            # This doesn't work now
+
+            # Fix process:
+            # 1. Debug with pkhex running on another ip
+            # 2. add blank save files and static assets to pkhex
+            # 3. copy over the db to the docker container to speed up testing
+
             print("Calling {}".format(api_endpoint))
             print("Request data: {}".format(request_body))
             # call the microservice internally
