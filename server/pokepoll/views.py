@@ -159,7 +159,8 @@ def saveGenView(request):
                     "IV": [ 31, 31, 31, 31, 31, 31 ],
                     "EV": [ 0, 0, 0, 0, 0, 0 ],
                     "moves": [ 425, 262 ],
-                    "movespp": [ 30, 40 ]
+                    "movespp": [ 30, 40 ],
+                    "heldItem": egg.pokemon_held_item,
 
                 })
 
@@ -275,7 +276,7 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
         with open(os.path.join(settings.BASE_DIR, 'pokepoll/static/pokepoll/held_items_to_id_gen_{}.json'.format(settings.POKEMON_GENERATION))) as f:
             item_dex = json.load(f)
             if pokemon_held_item in item_dex:
-                pokemon_held_item = pokedex[request.POST.get('pokemon_species')]
+                pokemon_held_item = item_dex[request.POST.get('pokemon_held_item')]
             else:
                 pokemon_held_item = 0
 

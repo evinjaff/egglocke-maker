@@ -45,7 +45,7 @@ namespace pkhexEgglocke
         public int Language = 1;
         public int Ability = 2;
         public Nature Nature = Nature.Adamant;
-
+        public int heldItem = 0;
 
 
         //Misc creator stuff
@@ -60,7 +60,7 @@ namespace pkhexEgglocke
         public ushort[] movespp = { 30, 40 };
 
 
-        public EggCreator(byte ball, ushort dexNumber, int language, int ability, Nature Nature, string OT, byte OTGender, string nickname, int[] IV, int[] EV, ushort[]  moves, ushort[] movespp) { 
+        public EggCreator(byte ball, ushort dexNumber, int language, int ability, Nature Nature, string OT, byte OTGender, string nickname, int[] IV, int[] EV, ushort[]  moves, ushort[] movespp, int HeldItem) { 
             
             this.ball = ball;
             this.dexNumber = dexNumber;
@@ -74,6 +74,7 @@ namespace pkhexEgglocke
             this.EV = EV;
             this.moves = moves;
             this.movespp = movespp;
+            this.heldItem = HeldItem;
 
 
         }
@@ -115,6 +116,7 @@ namespace pkhexEgglocke
             ushort dexNumber = (ushort) newObject.dexNumber;
             int language = (int) newObject.language;
             int ability = (int) newObject.ability;
+            int heldItem = (int) newObject.heldItem;
 
             string OT = newObject.OT;
             byte OTGender = (byte) newObject.OTGender;
@@ -135,7 +137,8 @@ namespace pkhexEgglocke
                 IV,
                 EV,
                 convertIntArrayViaCast(moves),
-                convertIntArrayViaCast(movespp)
+                convertIntArrayViaCast(movespp),
+                heldItem
 
                 );
            

@@ -75,8 +75,7 @@ namespace pkhexEgglocke
 
         public void addEgg( EggCreator pokemon, int boxIndex) {
 
-            // hacky start - hardcoded to box 1
-
+            // hacky start - hardcoded to gen 4 pokemon
             var mew = new PK4();
 
             // Standard Egg attributes
@@ -93,7 +92,7 @@ namespace pkhexEgglocke
             mew.OriginalTrainerName = pokemon.OT;
             mew.OriginalTrainerGender = pokemon.OTGender;
 
-           mew.HeldItem = 
+            mew.HeldItem = pokemon.heldItem;
             
 
 
