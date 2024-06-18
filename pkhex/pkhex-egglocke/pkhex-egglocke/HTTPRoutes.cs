@@ -28,7 +28,7 @@ namespace pkhex_egglocke
         [RestRoute("Get", "/api/file1")]
         public async Task DownloadFile(IHttpContext context)
         {
-            string filePath = "C:\\Users\\Evin Jaff\\Downloads\\Pokemon.mp3";
+            string filePath = @"support/Pokemon.mp3";
 
             context.Response.ContentType = "audio/mpeg";
             context.Response.AddHeader("Content-Disposition", "attachment; filename=blank.mp3");
