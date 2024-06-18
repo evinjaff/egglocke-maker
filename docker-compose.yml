@@ -15,7 +15,7 @@ services:
     container_name: server_container
     hostname: server_host
     ports:
-      - "8080:8080"
+      - "8443:8443"
     networks:
       app_network:
 

@@ -115,7 +115,24 @@ class CaptchaTestForm(forms.Form):
     
     num_eggs = forms.IntegerField(min_value=1, max_value=50)
 
+import random
+from django.db.models import Max, Min
+
+def get_random_objects(model, count):
+    max_id = model.objects.aggregate(max_id=Max("id"))['max_id']
+    min_id = model.objects.aggregate(min_id=Min("id"))['min_id']
     
+    if max_id is None or min_id is None:
+        return model.objects.none()  # No objects in the model
+    
+    random_ids = set()
+    while len(random_ids) < count:
+        random_id = random.randint(min_id, max_id)
+        if model.objects.filter(id=random_id).exists():
+            random_ids.add(random_id)
+
+    return model.objects.filter(id__in=random_ids)
+
 def saveGenView(request):
     if request.POST:
         form = CaptchaTestForm(request.POST)
@@ -124,7 +141,7 @@ def saveGenView(request):
         # check the input
         if form.is_valid():
             # get 5 eggs from the database
-            five_eggs = Pokemon.objects.order_by('-pub_date')[:1]
+            five_eggs = get_random_objects(Pokemon, 3)
 
             # create a list of dictionaries to hold the egg data
             egg_data = []
