@@ -402,3 +402,7 @@ server/venv/
 .DS_Store
 
 server/egglocke/db.sqlite3
+
+server/server-venv/
+
+*.sqlite3
