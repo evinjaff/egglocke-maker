@@ -18,6 +18,9 @@
     <None Update="support\Blank_SoulSilver.sav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="support\Complete_SoulSilver.sav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="support\Pokemon.mp3">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

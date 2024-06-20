@@ -31,8 +31,8 @@ class Pokemon(models.Model):
     pokemon_OTGender = models.IntegerField(default=1)
     pokemon_IV = models.JSONField(default=list([31, 31, 31, 31, 31, 31]))
     pokemon_EV = models.JSONField(default=list([0, 0, 0, 0, 0, 0]))
-    pokemon_moves = models.JSONField(default=dict)
-    pokemon_movespp = models.JSONField(default=dict)
+    pokemon_moves = models.JSONField(default=list([1]))
+    pokemon_movespp = models.JSONField(default=list([0]))
     pokemon_held_item = models.IntegerField(default=0)
 
 

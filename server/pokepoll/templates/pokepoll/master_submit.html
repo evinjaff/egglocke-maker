@@ -171,24 +171,37 @@
 
     <p>Moveset</p>
 
+    <div class="autocomplete" style="width:300px;">
     <input type="text" 
                name="move1"
+               id="move1"
                value="( None )"
     >
+    </div>
 
+    <div class="autocomplete" style="width:300px;">
     <input type="text" 
                name="move2"
+               id="move2"
                value="( None )"
     >
+    </div>
 
+    <div class="autocomplete" style="width:300px;">
     <input type="text" 
                name="move3"
+                id="move3"
                value="( None )"
     >
+    </div>
+
+    <div class="autocomplete" style="width:300px;">
     <input type="text" 
             name="move4"
+            id="move4"
             value="( None )"
     >
+    </div>
 
 
     <input type="submit" value="Save">
@@ -467,6 +480,31 @@ async function fetchHeldItems(max_index){
 
 }
 
+async function fetchPokemonMoves(max_index){
+    try {
+        // Fetch the JSON data
+    {% with "pokepoll/pokemon_move_to_id_gen_"|add:pokemon_generation|stringformat:"s"|add:".json" as filename %}
+        const response = await fetch("{% static filename %}");
+    {% endwith %}
+    
+        
+
+        // Check if the fetch was successful
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+        // Parse the JSON data
+        const pokemonAbilities = await response.json();
+        // Now you can use the `pokemonNames` variable which contains the parsed JSON data
+        console.log(pokemonAbilities);
+        return Object.keys(pokemonAbilities);
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+        return []
+    }
+
+}
+
 async function fetchPokemonAbilities(max_index){
     try {
         // Fetch the JSON data
@@ -511,6 +549,13 @@ fetchPokemonAbilities(max_pokedex_entry).then(all_abilities => {
 
 fetchHeldItems(max_pokedex_entry).then(all_items => {
     autocomplete(document.getElementById("held_item"), all_items);
+})
+
+// Register autocomplete onto all 4 moves
+fetchPokemonMoves(max_pokedex_entry).then(all_moves => {
+    for (let i = 1; i <= 4; i++) {
+        autocomplete(document.getElementById("move" + i), all_moves);
+    }
 })
 
 // UI code for the IVs and EVs

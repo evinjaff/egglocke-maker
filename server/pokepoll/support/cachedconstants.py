@@ -14,10 +14,12 @@ import re
 ## Filepahs
 POKEDEX_FILEPATH = '../static/pokepoll/pokedex.json'
 ABILITY_ENUM_PATH = 'ability_enum.cs'
+MOVE_ENUM_PATH = 'move_enum.cs'
 
 FILE_1_EXPORT_PATH = '../static/pokepoll/pokemon_name_to_id.json'
 FILE_2_EXPORT_PATH = '../static/pokepoll/all_pokemon_names.json'
 FILE_3_EXPORT_PATH_FORMAT_STRING = '../static/pokepoll/pokemon_ability_to_id_gen_{}.json'
+FILE_4_EXPORT_PATH_FORMAT_STRING = '../static/pokepoll/pokemon_move_to_id_gen_{}.json'
 
 ALL_POKEMON_NAMES = [
 ]
@@ -35,13 +37,23 @@ MAX_POKEDEX_DICT = {
 
 MAX_ABILITY_DICT = {
     3: 75,
-    4: 123,
+    4: 123+1,
     5: 164,
     6: 191,
     7: 233,
     8: 267,
     9: 305
 }
+
+MAX_MOVE_DICT = {
+    1: 166,
+    2: 252,
+    3: 355,
+    4: 468,
+    5: 560,
+    6: 621
+}
+
 
 POKEMON_NAME_TO_ID = {
 }
@@ -188,6 +200,9 @@ def main():
     # file 3: ability lookup of ability_id to ability_name
     ability_lookup = decode_c_sharp_enum(ABILITY_ENUM_PATH)
 
+    # file 4: move lookup of move_id to move_name
+    move_lookup = decode_c_sharp_enum(MOVE_ENUM_PATH)
+
 
     with open(FILE_1_EXPORT_PATH, 'w') as f:
         json.dump(pokemon_name_to_id, f)
@@ -208,6 +223,18 @@ def main():
 
         with open(FILE_3_EXPORT_PATH_FORMAT_STRING.format(terminating_index), 'w') as f:
             json.dump(ability_lookup_export, f)
+
+    for terminating_index in MAX_MOVE_DICT:
+        move_slice = move_lookup[:MAX_MOVE_DICT[terminating_index]]
+        move_lookup_export = {}
+
+        counter = 0
+        for move in move_slice:
+            move_lookup_export[move] = counter
+            counter += 1
+
+        with open(FILE_4_EXPORT_PATH_FORMAT_STRING.format(terminating_index), 'w') as f:
+            json.dump(move_lookup_export, f)
 
     # Also dump the full ability lookup
     master_ability_lookup = {}

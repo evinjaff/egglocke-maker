@@ -11,6 +11,17 @@
 
 <h2>Submissime owo</h2>
 
+<h3> IVs and EVs </h3>
+<p> IVs: {{ pokemon.pokemon_IV }} </p>
+<p> EVs: {{ pokemon.pokemon_EV }} </p>
+
+<h3> Moves </h3>
+<ul>
+    {% for move in pokemon.pokemon_moves %}
+        <li>{{ move }}</li>
+    {% endfor %}
+</ul>
+
 <!-- Import JQuery -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 

@@ -56,7 +56,7 @@ namespace pkhexEgglocke
         public int[] IV = [31, 31, 31, 31, 31, 31];
         public int[] EV = [0, 0, 0, 0, 0, 0];
 
-        public ushort [] moves = {425, 262};
+        public ushort [] moves = {425, 262 };
         public ushort[] movespp = { 30, 40 };
 
         public bool isShiny = true;

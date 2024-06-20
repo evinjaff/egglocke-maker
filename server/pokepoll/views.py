@@ -184,8 +184,8 @@ def saveGenView(request):
             savefile_results = requests.post(api_endpoint, json=request_body)
 
             print("Response: {}".format(savefile_results.text))
-            # return the save file
-            return HttpResponse(savefile_results.content, content_type='application/octet-stream')
+            # return the save file, with the filename set to the user's email
+            return HttpResponse(savefile_results.content, content_type='application/octet-stream', headers={'Content-Disposition': 'attachment; filename="savefile.sav"'})
             
 
     else:
@@ -280,6 +280,13 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
             else:
                 pokemon_held_item = 0
 
+        pokemon_moves = []
+        for i in range(4):
+            move = request.POST.get('pokemon_move' + str(i + 1))
+            if move:
+                pokemon_moves.append(int(move))
+
+        print(pokemon_moves)
 
         
 
@@ -291,6 +298,7 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
             'pokemon_EV': EVs,
             'pokemon_ability': pokemon_ability,
             'pokemon_held_item': pokemon_held_item,
+            'pokemon_moves': pokemon_moves,
         }
 
         print(kw_args)
