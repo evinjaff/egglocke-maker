@@ -156,11 +156,12 @@ def saveGenView(request):
                     "OT": egg.pokemon_OT,
                     "OTGender": 1,
                     "nickname": egg.pokemon_nickname,
-                    "IV": [ 31, 31, 31, 31, 31, 31 ],
-                    "EV": [ 0, 0, 0, 0, 0, 0 ],
-                    "moves": [ 425, 262 ],
+                    "IV": egg.pokemon_IV,
+                    "EV": egg.pokemon_EV,
+                    "moves": egg.pokemon_moves,
                     "movespp": [ 30, 40 ],
                     "heldItem": egg.pokemon_held_item,
+                    "isShiny": egg.pokemon_is_shiny,
 
                 })
 
@@ -281,12 +282,16 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
                 pokemon_held_item = 0
 
         pokemon_moves = []
-        for i in range(4):
-            move = request.POST.get('pokemon_move' + str(i + 1))
-            if move:
-                pokemon_moves.append(int(move))
+        # populate moves with the values from the form
+        with open(os.path.join(settings.BASE_DIR, 'pokepoll/static/pokepoll/pokemon_move_to_id_gen_{}.json'.format(settings.POKEMON_GENERATION))) as f:
+            move_dex = json.load(f)
+            for i in range(4):
+                move = request.POST.get('pokemon_move' + str(i + 1))
+                if move in move_dex:
+                    pokemon_moves.append(move_dex[move])
 
-        print(pokemon_moves)
+
+        # TODO: validate moves and provide a base case if a move is not found
 
         
 

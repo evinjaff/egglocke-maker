@@ -37,7 +37,7 @@ MAX_POKEDEX_DICT = {
 
 MAX_ABILITY_DICT = {
     3: 75,
-    4: 123+1,
+    4: 124,
     5: 164,
     6: 191,
     7: 233,

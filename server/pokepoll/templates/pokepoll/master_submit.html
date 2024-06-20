@@ -173,35 +173,44 @@
 
     <div class="autocomplete" style="width:300px;">
     <input type="text" 
-               name="move1"
-               id="move1"
-               value="( None )"
+               name="pokemon_move1"
+               id="pokemon_move1"
+               value="None"
     >
     </div>
+    <br>
+    <br>
 
     <div class="autocomplete" style="width:300px;">
     <input type="text" 
-               name="move2"
-               id="move2"
-               value="( None )"
+               name="pokemon_move2"
+               id="pokemon_move2"
+               value="None"
     >
     </div>
+    <br>
+    <br>
 
     <div class="autocomplete" style="width:300px;">
     <input type="text" 
-               name="move3"
-                id="move3"
-               value="( None )"
+               name="pokemon_move3"
+                id="pokemon_move3"
+               value="None"
     >
     </div>
+    <br>
+    <br>
 
     <div class="autocomplete" style="width:300px;">
     <input type="text" 
-            name="move4"
-            id="move4"
-            value="( None )"
+            name="pokemon_move4"
+            id="pokemon_move4"
+            value="None"
     >
     </div>
+    <br>
+    <br>
+
 
 
     <input type="submit" value="Save">
@@ -554,7 +563,7 @@ fetchHeldItems(max_pokedex_entry).then(all_items => {
 // Register autocomplete onto all 4 moves
 fetchPokemonMoves(max_pokedex_entry).then(all_moves => {
     for (let i = 1; i <= 4; i++) {
-        autocomplete(document.getElementById("move" + i), all_moves);
+        autocomplete(document.getElementById("pokemon_move" + i), all_moves);
     }
 })
 
