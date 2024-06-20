@@ -71,12 +71,73 @@ namespace pkhexEgglocke
         
         }
 
+        internal void MakeShiny(PK4 pokemon) { 
+            // Get IDs
+            ushort trainer_id = pokemon.TID16;
+            ushort secret_id = pokemon.SID16;
+            uint pid = ShinyUtil.GetShinyPID(trainer_id, secret_id, 0, 0);
 
+            pokemon.PID = pid;  
+            
+           
+        }
+
+        internal static bool IsShinyPID(uint pid, uint trainer_id, uint secret_id) { 
+            return ((trainer_id ^ secret_id ^ (pid & 0xFFFF) ^ (pid >> 16)) < 8);
+        }
+
+
+        internal uint GenerateShinyPID(uint trainer_id, uint secret_id) { 
+            Random rand = new Random();
+            uint pid;
+            do
+            {
+                pid = (uint)rand.Next(0, 0x1000000);
+            } while (!IsShinyPID(pid, trainer_id, secret_id));
+
+            return pid;
+
+        }
+
+        private static PK4 createDefaultEgg(uint tid, uint sid) {
+            
+            return new PK4
+            {
+                TrainerTID7 = tid,
+                TrainerSID7 = sid,
+                IsEgg = true,
+                MetLevel = 1,
+                Ball = 4,
+                Species = 1,
+                Nickname = "Egg",
+                Language = 1,
+                OriginalTrainerName = "PKHeX",
+                OriginalTrainerGender = 0,
+                HeldItem = 0,
+                Ability = 0,
+                Nature = 0,
+                Move1 = 0,
+                Move1_PP = 0,
+                Move2 = 0,
+                Move2_PP = 0,
+                Move3 = 0,
+                Move3_PP = 0,
+                Move4 = 0,
+                Move4_PP = 0,
+                IVs = new int[] { 31, 31, 31, 31, 31, 31 }
+            };
+        
+        
+        }
 
         public void addEgg( EggCreator pokemon, int boxIndex) {
 
             // hacky start - hardcoded to gen 4 pokemon
-            var mew = new PK4();
+            var mew = createDefaultEgg(this.currentSave.TrainerTID7, this.currentSave.TrainerSID7);
+
+            // Set the trainer ID according to the save file
+            mew.TrainerTID7 = this.currentSave.TrainerTID7;
+            mew.TrainerSID7 = this.currentSave.TrainerSID7;
 
             // Standard Egg attributes
             mew.IsEgg = pokemon.IsEgg;
@@ -109,6 +170,15 @@ namespace pkhexEgglocke
             mew.IVs = pokemon.IV;
 
             var box = this.currentSave.BoxData;
+
+            // Set shiny
+            // Shiny stuff
+            if (pokemon.isShiny)
+            {
+                Console.WriteLine("Making Shiny");
+                MakeShiny(mew);
+            }
+
 
             // Check legality of the pokemon
 

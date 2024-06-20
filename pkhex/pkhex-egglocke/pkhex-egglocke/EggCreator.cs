@@ -59,6 +59,8 @@ namespace pkhexEgglocke
         public ushort [] moves = {425, 262};
         public ushort[] movespp = { 30, 40 };
 
+        public bool isShiny = true;
+
 
         public EggCreator(byte ball, ushort dexNumber, int language, int ability, Nature Nature, string OT, byte OTGender, string nickname, int[] IV, int[] EV, ushort[]  moves, ushort[] movespp, int HeldItem) { 
             

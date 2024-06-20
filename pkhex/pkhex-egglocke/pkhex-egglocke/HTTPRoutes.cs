@@ -45,7 +45,7 @@ namespace pkhex_egglocke
             var model = await DeserializeAsync<SaveFileGeneratorModel>(context.Request.InputStream, context.CancellationToken);
 
             // yields array of dynamic objects
-            SaveWriter sw = new SaveWriter(@"support/Blank_SoulSilver.sav");
+            SaveWriter sw = new SaveWriter(@"support/Complete_SoulSilver.sav");
 
             EggCreator[] eggArray = new EggCreator[model.eggs.Length];
             for (int i = 0; i < model.eggs.Length; i++) {
