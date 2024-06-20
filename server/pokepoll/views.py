@@ -74,6 +74,21 @@ class DetailView(generic.DetailView):
     template_name = "pokepoll/detail.html"
     context_object_name = "pokemon"
 
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        
+        context["moves_pretty"] = []
+        with open(os.path.join(settings.BASE_DIR, 'pokepoll/static/pokepoll/pokemon_move_to_id_gen_{}.json'.format(settings.POKEMON_GENERATION))) as f:
+            move_dex = json.load(f)
+            # find the keys that match the values in the pokemon_moves list
+            for move in context['pokemon'].pokemon_moves:
+                for key, value in move_dex.items():
+                    if value == move:
+                        context["moves_pretty"].append(key)
+                        break
+
+        return context
+
 
 class ResultsView(generic.DetailView):
     model = Pokemon
@@ -172,13 +187,6 @@ def saveGenView(request):
                 "eggs": egg_data
             }
 
-            # This doesn't work now
-
-            # Fix process:
-            # 1. Debug with pkhex running on another ip
-            # 2. add blank save files and static assets to pkhex
-            # 3. copy over the db to the docker container to speed up testing
-
             print("Calling {}".format(api_endpoint))
             print("Request data: {}".format(request_body))
             # call the microservice internally
@@ -202,10 +210,10 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
 
     def get(self, request, *args, **kwargs):
         submitter_form = SubmitterForm()
-        song_form = PokemonForm()
+        pokemon_form = PokemonForm()
         return render(request, self.template_name, {
             'submitter_form': submitter_form,
-            'pokemon_form': song_form,
+            'pokemon_form': pokemon_form,
             'max_pokedex_entry': MAX_POKEDEX_DICT[settings.POKEMON_GENERATION],
             'pokemon_generation': str(settings.POKEMON_GENERATION)
         })

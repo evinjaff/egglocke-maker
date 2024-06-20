@@ -1,7 +1,13 @@
 
 
-function getPokemonSpriteURL(pokemonID) {
-    return `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${pokemonID}.png`
+function getPokemonSpriteURL(pokemonID, isShiny) {
+    base_url = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/`
+
+    if (isShiny) {
+        return `${base_url}shiny/${pokemonID}.png`
+    }
+
+    return `${base_url}${pokemonID}.png`
 }
 
 async function getPokemonNameFromID(pokemonID) {

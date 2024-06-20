@@ -42,7 +42,7 @@
                     Most Recent Submission:
                 </h3>
                     <br>
-                    <img class="pokemon-icon" src="{% static 'pokepoll/img/placeholdersprite.png' %}" pokemon-dex="{{ most_recent_pokemon.pokemon_species }}">
+                    <img class="pokemon-icon" src="{% static 'pokepoll/img/placeholdersprite.png' %}" pokemon-dex="{{ most_recent_pokemon.pokemon_species }}" pokemon-is-shiny={{most_recent_pokemon.pokemon_is_shiny}}>
                     <a href="{% url 'pokepoll:detail' most_recent_pokemon.id %}">{{ most_recent_pokemon.pokemon_nickname }} (submitted by {{ most_recent_pokemon.submitter.name }}) </a>
                 {% else %}
                     
@@ -59,18 +59,10 @@
 
 <!-- Import home-built libraries -->
 <script src="{% static 'pokepoll/pokeapifunctions.js' %}"></script>
+<script src="{% static 'pokepoll/uifunctions.js' %}"></script>
 
 <!-- Specific JS Code -->
 <script>
-
-    async function populateIcons() {
-        let icons = document.getElementsByClassName("pokemon-icon");
-        for (let i = 0; i < icons.length; i++) {
-            let dexNumber = icons[i].getAttribute("pokemon-dex");
-            let spriteURL = await getPokemonSpriteURL(dexNumber);
-            icons[i].src = spriteURL;
-        }
-    }
 
     populateIcons();
 
