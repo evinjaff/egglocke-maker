@@ -35,6 +35,8 @@ class Pokemon(models.Model):
     pokemon_movespp = models.JSONField(default=list([0]))
     pokemon_held_item = models.IntegerField(default=0)
     pokemon_is_shiny = models.BooleanField(default=False)
+    pokemon_intended_generation = models.IntegerField(default=4, choices=[(1, "Gen 1"), (2, "Gen 2"), (3, "Gen 3"), (4, "Gen 4"), (5, "Gen 5"), (6, "Gen 6"), (7, "Gen 7"), (8, "Gen 8")])
+    pokemon_compatible_generations = models.JSONField(default=list([4]))
 
 
     pub_date = models.DateTimeField("date published")

@@ -76,6 +76,34 @@ def get_pokemon_name_to_id(pokedex):
 
     return pokemon_name_to_id
 
+
+def generate_nature_enum():
+    post_gen_3_natures = ["Hardy", "Lonley", "Brave", "Adamant", "Naughty", "Bold", "Docile", "Relaxed", "Impish", "Lax", "Timid", "Hasty", "Serious", "Jolly", "Naive", "Modest", "Mild", "Quiet", "Bashful", "Rash", "Calm", "Gentle", "Sassy", "Careful", "Quirky"]
+    gen_3_natures = ["Lonely", "Brave", "Adamant", "Naughty", "Bold", "Relaxed", "Impish", "Lax", "Timid", "Hasty", "Jolly", "Naive", "Modest", "Mild", "Quiet", "Rash", "Calm", "Gentle", "Sassy", "Careful"]
+
+    # create a dictionary that maps the nature to the index, using post_gen_3_natures as the key 
+    post_gen_3_nature_enum = {}
+    gen3_nature_enum = {}
+
+    counter = 0
+    for nature in post_gen_3_natures:
+        
+        if nature in gen_3_natures:
+            gen3_nature_enum[nature] = counter
+
+        post_gen_3_nature_enum[nature] = counter
+
+
+        counter += 1
+
+    # Also add random nature
+    post_gen_3_nature_enum["Random"] = counter
+    gen3_nature_enum["Random"] = counter
+
+    return post_gen_3_nature_enum, gen3_nature_enum
+
+
+
 def decode_c_sharp_enum(ENUM_PATH):
     '''
     
@@ -245,6 +273,21 @@ def main():
 
     with open(FILE_3_EXPORT_PATH_FORMAT_STRING.format("full"), 'w') as f:
         json.dump(master_ability_lookup, f)
+
+
+    # get nature enums and dump them
+    post_gen_3_nature_enum, gen3_nature_enum = generate_nature_enum()
+
+    with open('../static/pokepoll/nature_enum.json', 'w') as f:
+        json.dump(post_gen_3_nature_enum, f)
+
+    with open('../static/pokepoll/gen3_nature_enum.json', 'w') as f:
+        json.dump(gen3_nature_enum, f)
+
+
+
+
+    
         
 
 

@@ -42,7 +42,7 @@
                     Most Recent Submission:
                 </h3>
                     <br>
-                    <img class="pokemon-icon" src="{% static 'pokepoll/img/placeholdersprite.png' %}" pokemon-dex="{{ most_recent_pokemon.pokemon_species }}" pokemon-is-shiny={{most_recent_pokemon.pokemon_is_shiny}}>
+                    <img class="pokemon-icon" src="{% static 'pokepoll/img/placeholdersprite.png' %}" pokemon-dex="{{ most_recent_pokemon.pokemon_species }}" pokemon_is_shiny={{most_recent_pokemon.pokemon_is_shiny}}>
                     <a href="{% url 'pokepoll:detail' most_recent_pokemon.id %}">{{ most_recent_pokemon.pokemon_nickname }} (submitted by {{ most_recent_pokemon.submitter.name }}) </a>
                 {% else %}
                     

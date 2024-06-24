@@ -61,7 +61,7 @@ class IndexView(generic.ListView):
     
     def get_queryset(self):
         """
-        Return the last five published questions (not including those set to be
+        Return the last fifty published questions (not including those set to be
         published in the future).
         """
         return Pokemon.objects.filter(pub_date__lte=timezone.now()).order_by("-pub_date")[
@@ -98,7 +98,22 @@ class ResultsView(generic.DetailView):
 class PokemonForm(forms.ModelForm):
     class Meta:
         model = Pokemon
-        fields = ['pokemon_nickname', 'pokemon_species', 'pokemon_ball', 'pokemon_language', 'pokemon_ability', 'pokemon_held_item', 'pokemon_nature', 'pokemon_OT', 'pokemon_OTGender', 'pokemon_IV', 'pokemon_EV', 'pokemon_moves', 'pokemon_movespp']
+        fields = ['pokemon_nickname', 
+                  'pokemon_species', 
+                  'pokemon_ball', 
+                  'pokemon_language', 
+                  'pokemon_ability', 
+                  'pokemon_held_item', 
+                  'pokemon_nature', 
+                  'pokemon_OT', 
+                  'pokemon_OTGender', 
+                  'pokemon_IV', 
+                  'pokemon_EV', 
+                  'pokemon_moves', 
+                  'pokemon_movespp', 
+                  'pokemon_is_shiny', 
+                  'pokemon_intended_generation', 
+                  'pokemon_compatible_generations']
 
 class SubmitterForm(forms.ModelForm):
     class Meta:
@@ -211,15 +226,18 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
     def get(self, request, *args, **kwargs):
         submitter_form = SubmitterForm()
         pokemon_form = PokemonForm()
+
+
         return render(request, self.template_name, {
             'submitter_form': submitter_form,
             'pokemon_form': pokemon_form,
             'max_pokedex_entry': MAX_POKEDEX_DICT[settings.POKEMON_GENERATION],
-            'pokemon_generation': str(settings.POKEMON_GENERATION)
+            'pokemon_generation': str(settings.POKEMON_GENERATION),
+            'nickname_character_limit': 10 if settings.POKEMON_GENERATION < 6 else 12
         })
 
     def post(self, request, *args, **kwargs):
-
+        print("POST of Proposed Pokemon to add")
         print(request.POST)
 
         submitter_form = SubmitterForm(request.POST)
@@ -301,17 +319,35 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
 
         # TODO: validate moves and provide a base case if a move is not found
 
+        # Set shiny status
+        pokemon_is_shiny = request.POST.get('pokemon_is_shiny')
+        if pokemon_is_shiny is None:
+            pokemon_is_shiny = False
+        elif "Yes" in pokemon_is_shiny or "yes" in pokemon_is_shiny or "True" in pokemon_is_shiny or "true" in pokemon_is_shiny or "On" in pokemon_is_shiny or "on" in pokemon_is_shiny:
+            pokemon_is_shiny = True
+        else:
+            pokemon_is_shiny = False
+
+
+        # Get pokemon nature
+        pokemon_nature = request.POST.get('pokemon_nature')
+        pokemon_nature = int(pokemon_nature)
+
+
         
 
         kw_args = { 'pokemon_nickname': request.POST.get('pokemon_nickname'),
             'pokemon_species': pokemon_species,
             'pub_date': timezone.now(),
             'submitter_id': foreign_key,
+            'pokemon_is_shiny': pokemon_is_shiny,
             'pokemon_IV': IVs,
             'pokemon_EV': EVs,
             'pokemon_ability': pokemon_ability,
             'pokemon_held_item': pokemon_held_item,
             'pokemon_moves': pokemon_moves,
+            'pokemon_nature': pokemon_nature,
+            
         }
 
         print(kw_args)

@@ -75,18 +75,41 @@
                 placeholder="Pokemon Species">
     </div>
 
+    <br>
+    
+    <p>Intended Pokemon Generation</p>
 
 
-    <p>Nickname (Limit 10 characters) </p>
+    {{ pokemon_form.pokemon_intended_generation }}
 
-    <input type="text" 
-               name="{{ pokemon_form.pokemon_nickname.name }}" 
-               id="{{ pokemon_form.pokemon_nickname.id_for_label }}" 
-               class="{{ pokemon_form.pokemon_nickname.field.widget.attrs.class }}" 
-               style="{{ pokemon_form.pokemon_nickname.field.widget.attrs.style }}" 
-               placeholder="{{ pokemon_form.pokemon_nickname.field.widget.attrs.placeholder }}" 
-               value="{{ pokemon_form.pokemon_nickname.value|default_if_none:'' }}">
+    <p>Other Generations this Pokemon can be used in</p>
 
+    <p id="multiselect-tooltip"></p>
+
+    <select name="{{ pokemon_form.pokemon_compatible_generations.name }}" id="{{ pokemon_form.pokemon_compatible_generations.id_for_label }}" multiple>
+        <option value="1">Generation 1</option>
+        <option value="2">Generation 2</option>
+        <option value="3">Generation 3</option>
+        <option value="4">Generation 4</option>
+        <option value="5">Generation 5</option>
+        <option value="6">Generation 6</option>
+        <option value="7">Generation 7</option>
+        <option value="8">Generation 8</option>
+    </select> 
+
+
+
+    <p>Nickname (Limit {{nickname_character_limit}} characters) </p>
+
+    <div class="autocomplete" style="width:300px;">
+        <input type="text" 
+                name="{{ pokemon_form.pokemon_nickname.name }}" 
+                id="{{ pokemon_form.pokemon_nickname.id_for_label }}" 
+                class="{{ pokemon_form.pokemon_nickname.field.widget.attrs.class }}" 
+                style="{{ pokemon_form.pokemon_nickname.field.widget.attrs.style }}" 
+                placeholder="{{ pokemon_form.pokemon_nickname.field.widget.attrs.placeholder }}" 
+                value="{{ pokemon_form.pokemon_nickname.value|default_if_none:'' }}">
+    </div>
     <br>
 
     <p> Ability </p>
@@ -109,6 +132,17 @@
               name="{{ pokemon_form.pokemon_held_item.name }}"
               placeholder="Held Item">
     </div>
+
+
+    <br>
+
+    <h3>Stats:</h3>
+
+    <p>Nature:</p>
+
+    <select name="{{ pokemon_form.pokemon_nature.name }}" id="{{ pokemon_form.pokemon_nature.id_for_label }}">
+
+    </select>
 
 
     <br>
@@ -221,6 +255,11 @@
 <!-- Import JQuery -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
+<!-- Import home-built libraries -->
+<script src="{% static 'pokepoll/pokeapifunctions.js' %}"></script>
+<script src="{% static 'pokepoll/uifunctions.js' %}"></script>
+<script src="{% static 'pokepoll/autocomplete_form_ui.js' %}"></script>
+
 <script>
 
   // global pokemon generation
@@ -323,109 +362,15 @@ $("#{{ submitter_form.email.id_for_label }}").on("keyup", function() {
 
 </script>
 
-<!-- Autocomplete slop -->
 <script>
 
-    function autocomplete(inp, arr) {
-        /*the autocomplete function takes two arguments,
-        the text field element and an array of possible autocompleted values:*/
-        var currentFocus;
-        /*execute a function when someone writes in the text field:*/
-        inp.addEventListener("input", function(e) {
-            var a, b, i, val = this.value;
-            /*close any already open lists of autocompleted values*/
-            closeAllLists();
-            if (!val) { return false;}
-            currentFocus = -1;
-            /*create a DIV element that will contain the items (values):*/
-            a = document.createElement("DIV");
-            a.setAttribute("id", this.id + "autocomplete-list");
-            a.setAttribute("class", "autocomplete-items");
-            /*append the DIV element as a child of the autocomplete container:*/
-            this.parentNode.appendChild(a);
-            /*for each item in the array...*/
-            for (i = 0; i < arr.length; i++) {
-              /*check if the item starts with the same letters as the text field value:*/
-              if (arr[i].substr(0, val.length).toUpperCase() == val.toUpperCase()) {
-                /*create a DIV element for each matching element:*/
-                b = document.createElement("DIV");
-                /*make the matching letters bold:*/
-                b.innerHTML = "<strong>" + arr[i].substr(0, val.length) + "</strong>";
-                b.innerHTML += arr[i].substr(val.length);
-                /*insert a input field that will hold the current array item's value:*/
-                b.innerHTML += "<input type='hidden' value='" + arr[i] + "'>";
-                /*execute a function when someone clicks on the item value (DIV element):*/
-                b.addEventListener("click", function(e) {
-                    /*insert the value for the autocomplete text field:*/
-                    inp.value = this.getElementsByTagName("input")[0].value;
-                    /*close the list of autocompleted values,
-                    (or any other open lists of autocompleted values:*/
-                    closeAllLists();
-                });
-                a.appendChild(b);
-              }
-            }
-        });
-        /*execute a function presses a key on the keyboard:*/
-        inp.addEventListener("keydown", function(e) {
-            var x = document.getElementById(this.id + "autocomplete-list");
-            if (x) x = x.getElementsByTagName("div");
-            if (e.keyCode == 40) {
-              /*If the arrow DOWN key is pressed,
-              increase the currentFocus variable:*/
-              currentFocus++;
-              /*and and make the current item more visible:*/
-              addActive(x);
-            } else if (e.keyCode == 38) { //up
-              /*If the arrow UP key is pressed,
-              decrease the currentFocus variable:*/
-              currentFocus--;
-              /*and and make the current item more visible:*/
-              addActive(x);
-            } else if (e.keyCode == 13) {
-              /*If the ENTER key is pressed, prevent the form from being submitted,*/
-              e.preventDefault();
-              if (currentFocus > -1) {
-                /*and simulate a click on the "active" item:*/
-                if (x) x[currentFocus].click();
-              }
-            }
-        });
-        function addActive(x) {
-          /*a function to classify an item as "active":*/
-          if (!x) return false;
-          /*start by removing the "active" class on all items:*/
-          removeActive(x);
-          if (currentFocus >= x.length) currentFocus = 0;
-          if (currentFocus < 0) currentFocus = (x.length - 1);
-          /*add class "autocomplete-active":*/
-          x[currentFocus].classList.add("autocomplete-active");
-        }
-        function removeActive(x) {
-          /*a function to remove the "active" class from all autocomplete items:*/
-          for (var i = 0; i < x.length; i++) {
-            x[i].classList.remove("autocomplete-active");
-          }
-        }
-        function closeAllLists(elmnt) {
-          /*close all autocomplete lists in the document,
-          except the one passed as an argument:*/
-          var x = document.getElementsByClassName("autocomplete-items");
-          for (var i = 0; i < x.length; i++) {
-            if (elmnt != x[i] && elmnt != inp) {
-              x[i].parentNode.removeChild(x[i]);
-            }
-          }
-        }
-        /*execute a function when someone clicks in the document:*/
-        document.addEventListener("click", function (e) {
-            closeAllLists(e.target);
-        });
-      }
-
-
-
+// Global Variables
+let current_generation = 4;
+let NATURES;
+let NATURES_GEN_3;
 max_pokedex_entry = {{ max_pokedex_entry }};
+
+// Other Functions
 
 // Function to fetch and use the JSON data
 async function fetchPokemonNames(max_index) {
@@ -460,6 +405,44 @@ async function fetchPokemonMoves(max_index){
         // Now you can use the `pokemonNames` variable which contains the parsed JSON data
         console.log(pokemonMoves);
         return pokemonMoves.slice(0, max_index);
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+        return []
+    }
+}
+
+async function getchPokemonNature(){
+    try {
+        // Fetch the JSON data from the server
+        const response = await fetch('{% static 'pokepoll/nature_enum.json' %}');
+        // Check if the fetch was successful
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+        // Parse the JSON data
+        const pokemonNatures = await response.json();
+        // Now you can use the `pokemonNames` variable which contains the parsed JSON data
+        return pokemonNatures; 
+
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+        return []
+    }
+}
+
+async function getchPokemonNatureGen3(){
+    try {
+        // Fetch the JSON data from the server
+        const response = await fetch('{% static 'pokepoll/gen3_nature_enum.json' %}');
+        // Check if the fetch was successful
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+        // Parse the JSON data
+        const pokemonNatures = await response.json();
+        // Now you can use the `pokemonNames` variable which contains the parsed JSON data
+        return pokemonNatures;
+        
     } catch (error) {
         console.error('There was a problem with the fetch operation:', error);
         return []
@@ -569,10 +552,12 @@ fetchPokemonMoves(max_pokedex_entry).then(all_moves => {
     }
 })
 
-// UI code for the IVs and EVs
-let evs = document.querySelectorAll("input[type=range]");
+
+
 let totalEvs = 0;
 let maxEvs = 510;
+let evs = [document.getElementById("EV1"), document.getElementById("EV2"), document.getElementById("EV3"), document.getElementById("EV4"), document.getElementById("EV5"), document.getElementById("EV6")];
+
 evs.forEach(ev => {
     ev.addEventListener("input", function() {
         totalEvs = 0;
@@ -597,7 +582,100 @@ evs.forEach(ev => {
     });
 });
 
+function fill_in_generations(selector_id, exclude_gen) {
 
+    let select = document.getElementById(selector_id);
+
+    // remove Existing Options
+    select.options.length = 0;
+
+    console.log(select.options)
+
+    let options = select.options;
+    for (let i = 1; i < 10; i++) {
+        // add an option 
+        let option = document.createElement("option");
+        option.text = `Generation ${i}`;
+        option.value = i;
+        if (i == exclude_gen) {
+            option.disabled = true;
+        }
+        options.add(option);
+
+    }
+}
+
+function fill_in_natures(selector_id, generation) {
+    let select = document.getElementById(selector_id);
+    let options = select.options;
+
+    let original_choice = select.value;
+
+    // clear options
+    options.length = 0;
+    let nature_json_to_use = generation == 3 ? NATURES_GEN_3 : NATURES;
+
+    for (let nature in nature_json_to_use) {
+        let option = document.createElement("option");
+        option.text = nature;
+        option.value = nature_json_to_use[nature];
+
+        if (option.value == original_choice) {
+            option.selected = true;
+        }
+
+        options.add(option);
+    }
+}
+
+
+
+// Runs all init functions- Nothing else should be called anywhere else
+async function init() {
+    
+    // Fetch
+
+    NATURES_GEN_3 = await getchPokemonNatureGen3()
+    NATURES = await getchPokemonNature();
+
+    console.log(NATURES_GEN_3);
+    console.log(NATURES);
+
+    // Fill ins
+    fill_in_generations("{{ pokemon_form.pokemon_compatible_generations.id_for_label }}", document.getElementById("{{ pokemon_form.pokemon_intended_generation.id_for_label }}").value);
+    fill_in_natures("{{ pokemon_form.pokemon_nature.id_for_label }}", current_generation);
+
+    
+
+    // populate the tooltip
+    document.getElementById("multiselect-tooltip").innerText = `Hold down the ${getMultiSelectToolForOS()} key to select multiple generations`
+
+
+
+    // Event Listeners: 
+
+    // Hook event listener to listen for value changes in id_pokemon_intended_generation
+    document.getElementById("{{ pokemon_form.pokemon_intended_generation.id_for_label }}").addEventListener("change", function() {
+        let selected = document.getElementById("{{ pokemon_form.pokemon_intended_generation.id_for_label }}").value;
+        console.log(selected);
+        current_generation = selected;
+        refreshUI();
+
+    });
+
+    
+
+}
+
+async function refreshUI() {
+    console.log("Calling UI Refresh")
+    console.log(`Status of Global Variables: \n NATURES: ${NATURES} \n NATURES_GEN_3: ${NATURES_GEN_3} \n Current Generation: ${current_generation} \n POKEMON_GENERATION: ${POKEMON_GENERATION} \n max_pokedex_entry: ${max_pokedex_entry}`)
+
+    fill_in_generations("{{ pokemon_form.pokemon_compatible_generations.id_for_label }}", current_generation);
+    fill_in_natures("{{ pokemon_form.pokemon_nature.id_for_label }}", current_generation);
+}
+
+init();
 
 
 
