@@ -22,6 +22,11 @@ from captcha.fields import CaptchaField
 from django.urls import reverse
 from .models import Pokemon, Submitter
 
+PKHEX_GAMECODES = {
+    "Pokemon SoulSilver": 8,
+    "Pokemon Diamond": 10
+}
+
 @require_GET
 def robots_txt_view(request):
     robots_txt_path = "pokepoll/support/robots.txt"
@@ -135,13 +140,12 @@ class SubmitterForm(forms.ModelForm):
 class CaptchaTestForm(forms.Form):
     captcha = CaptchaField()
     
-    pokemon_game = forms.ChoiceField(choices=( 
-    ("1", "Pokemon Soul Silver"), 
-    ("2", "Pokemon Heart Gold"), 
-    ("3", "Pokemon Platinum"), 
-    ("4", "Pokemon Diamond"), 
-    ("5", "Pokemon Pearl"),
-    ))
+    pokemon_choices = ()
+
+    for game in PKHEX_GAMECODES:
+        pokemon_choices += ((PKHEX_GAMECODES[game], game),)
+
+    pokemon_game = forms.ChoiceField(choices=pokemon_choices, required=True, label="Game")
     
     num_eggs = forms.IntegerField(min_value=1, max_value=50)
 
@@ -163,10 +167,12 @@ def get_random_objects(model, count):
 
     return model.objects.filter(id__in=random_ids)
 
+
+
 def saveGenView(request):
     if request.POST:
         form = CaptchaTestForm(request.POST)
-
+        
         # Validate the form: the captcha field will automatically
         # check the input
         if form.is_valid():
@@ -182,25 +188,29 @@ def saveGenView(request):
                     "ball": 2,
                     "language": 1,
                     "ability": egg.pokemon_ability,
-                    "nature": 1,
+                    "nature": egg.pokemon_nature,
                     "OT": egg.pokemon_OT,
                     "OTGender": 1,
                     "nickname": egg.pokemon_nickname,
                     "IV": egg.pokemon_IV,
                     "EV": egg.pokemon_EV,
                     "moves": egg.pokemon_moves,
-                    "movespp": [ 30, 40 ],
+                    "movespp": [0] * len(egg.pokemon_moves),
                     "heldItem": egg.pokemon_held_item,
                     "isShiny": egg.pokemon_is_shiny,
 
                 })
 
-
+            print("POST {}".format(settings.MICROSERVICE_URLS['savefile']))
             api_endpoint = settings.MICROSERVICE_URLS['savefile'] + "api/buildSaveFile"
             request_body = {
                 "generation": 4,
-                "eggs": egg_data
+                "eggs": egg_data,
+                "gamecode": int(form.cleaned_data['pokemon_game']),
             }
+
+            with open("DEBUG_post.json", "w") as f:
+                json.dump(request_body, f)
 
             print("Calling {}".format(api_endpoint))
             print("Request data: {}".format(request_body))

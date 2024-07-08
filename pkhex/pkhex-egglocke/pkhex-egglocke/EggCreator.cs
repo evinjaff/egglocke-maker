@@ -24,6 +24,7 @@ namespace pkhexEgglocke
 
     internal class EggCreator
     {
+        // TODO: refactor to get/set
 
         protected bool allowUserIVs => true;
         protected bool allowUserShiny => true;
@@ -62,7 +63,7 @@ namespace pkhexEgglocke
         public bool isShiny = true;
 
 
-        public EggCreator(byte ball, ushort dexNumber, int language, int ability, Nature Nature, string OT, byte OTGender, string nickname, int[] IV, int[] EV, ushort[]  moves, ushort[] movespp, int HeldItem) { 
+        public EggCreator(byte ball, ushort dexNumber, int language, int ability, Nature Nature, string OT, byte OTGender, string nickname, int[] IV, int[] EV, ushort[]  moves, ushort[] movespp, int HeldItem, bool isShiny) { 
             
             this.ball = ball;
             this.dexNumber = dexNumber;
@@ -77,6 +78,7 @@ namespace pkhexEgglocke
             this.moves = moves;
             this.movespp = movespp;
             this.heldItem = HeldItem;
+            this.isShiny = isShiny;
 
 
         }
@@ -105,13 +107,20 @@ namespace pkhexEgglocke
 
             Console.WriteLine("Successfully deserialized JSON!");
 
-            Nature nature = lookupNatureInt((int) newObject.nature.Value);
+
+            Console.WriteLine("Nature: ");
+            Console.WriteLine((byte) newObject.nature.Value);
+
+            Nature nature = natureEnumGrab((byte) newObject.nature.Value);
+
+            Console.WriteLine(nature);
 
             int[] IV = newObject.IV.ToObject<int[]>();
             int[] EV = newObject.EV.ToObject<int[]>();
 
             int[] moves = newObject.moves.ToObject<int[]>();
             int[] movespp = newObject.movespp.ToObject<int[]>();
+            bool isShiny = newObject.isShiny;
 
 
             byte ball = (byte) newObject.ball;
@@ -140,19 +149,23 @@ namespace pkhexEgglocke
                 EV,
                 convertIntArrayViaCast(moves),
                 convertIntArrayViaCast(movespp),
-                heldItem
+                heldItem,
+                isShiny
 
                 );
            
         }
 
-        public static Nature lookupNatureInt(int nature)
+        public static Nature natureEnumGrab(byte value)
         {
-            if (nature == 1) {
-                return Nature.Adamant;
+            if (Enum.IsDefined(typeof(Nature), value))
+            {
+                return (Nature)value;
             }
-
-            return Nature.Bashful;
+            else
+            {
+                throw new ArgumentOutOfRangeException(nameof(value), "Value is out of range for the Nature enum.");
+            }
         }
 
         public static ushort[] convertIntArrayViaCast(int[] array)

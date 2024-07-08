@@ -38,14 +38,29 @@ namespace pkhex_egglocke
 
         }
 
-        [RestRoute("Post", "/api/buildSaveFile")]
+        public string getGameSavPath(uint gamecode) {
+
+            switch (gamecode)
+            {
+                case 8:
+                    return @"support/Complete_SoulSilver.sav";
+                case 10:
+                    return @"support/Blank_Diamond.sav";
+                default:
+                    throw new Exception("Invalid game code");
+            }
+        }
+
+        [RestRoute("POST", "/api/buildSaveFile")]
         public async Task BuildSaveFile(IHttpContext context)
         {
             // Decode the input stream
             var model = await DeserializeAsync<SaveFileGeneratorModel>(context.Request.InputStream, context.CancellationToken);
 
+            string gamePath = getGameSavPath(model.gamecode);
+
             // yields array of dynamic objects
-            SaveWriter sw = new SaveWriter(@"support/Complete_SoulSilver.sav");
+            SaveWriter sw = new SaveWriter(gamePath);
 
             EggCreator[] eggArray = new EggCreator[model.eggs.Length];
             for (int i = 0; i < model.eggs.Length; i++) {

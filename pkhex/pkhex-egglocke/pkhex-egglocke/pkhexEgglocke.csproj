@@ -10,8 +10,13 @@
 
   <ItemGroup>
     <PackageReference Include="Grapevine" Version="5.0.0-rc.10" />
-    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-    <PackageReference Include="PKHeX.Core" Version="24.5.5" />	  
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />	  
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="PKHeX.Core">
+      <HintPath>support\PKHeX.Core.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
   <ItemGroup>
@@ -19,6 +24,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="support\Complete_SoulSilver.sav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="support\PKHeX.Core.dll">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="support\Pokemon.mp3">

@@ -23,4 +23,4 @@ ENV PORT 1234
 EXPOSE 1234
 
 WORKDIR /source/pkhex-egglocke
-ENTRYPOINT ["dotnet", "run"]
+ENTRYPOINT ["dotnet", "run", "-api"]

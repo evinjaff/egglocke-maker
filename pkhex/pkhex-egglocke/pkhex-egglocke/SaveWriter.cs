@@ -75,7 +75,7 @@ namespace pkhexEgglocke
             // Get IDs
             ushort trainer_id = pokemon.TID16;
             ushort secret_id = pokemon.SID16;
-            uint pid = ShinyUtil.GetShinyPID(trainer_id, secret_id, 0, 0);
+            uint pid = ShinyUtil.GetShinyPID(trainer_id, secret_id, pokemon.PID, 0);
 
             pokemon.PID = pid;  
             
@@ -132,8 +132,10 @@ namespace pkhexEgglocke
 
         public void addEgg( EggCreator pokemon, int boxIndex) {
 
+            
+
             // hacky start - hardcoded to gen 4 pokemon
-            var mew = createDefaultEgg(this.currentSave.TrainerTID7, this.currentSave.TrainerSID7);
+            PK4 mew = createDefaultEgg(this.currentSave.TrainerTID7, this.currentSave.TrainerSID7);
 
             // Set the trainer ID according to the save file
             mew.TrainerTID7 = this.currentSave.TrainerTID7;
@@ -145,7 +147,7 @@ namespace pkhexEgglocke
             mew.MetLevel = pokemon.MetLevel;
             mew.Ball = pokemon.ball;
 
-
+            
             // Pokemon Info
             mew.Species = pokemon.dexNumber;
             mew.Nickname = pokemon.nickname;
@@ -154,45 +156,59 @@ namespace pkhexEgglocke
             mew.OriginalTrainerGender = pokemon.OTGender;
 
             mew.HeldItem = pokemon.heldItem;
+            mew.Version = GameVersion.HG;
             
 
 
             mew.Ability = pokemon.Ability;
-            mew.Nature = pokemon.Nature;
 
+            Console.WriteLine(pokemon.moves);
             // Moveset
-            mew.Move1 = (int)Move.ShadowSneak;
-            mew.Move1_PP = 30;
-            mew.Move2 = (int)Move.Memento;
-            mew.Move2_PP = 20;
 
+            // Based on number of moves, set the moves
+            for (int i = 0; i < pokemon.moves.Length; i++) {
+                mew.SetMove(i, pokemon.moves[i]);
+            }
 
             mew.IVs = pokemon.IV;
 
             var box = this.currentSave.BoxData;
 
-            // Set shiny
-            // Shiny stuff
+            // FOR SOME REASON PKHEX.CORE DOESN'T F***ING SET NATURES CORRECTLY
+            // SO I NEED TO RUN THIS LOOP UNTIL IT KICKS OUT THE RIGHT NATURE
+            // THIS TOOK ME 2 HOURS TO FIGURE OUT
+            Console.WriteLine((Nature)(mew.PID % 25) == pokemon.Nature);
+            for (; !( (Nature)(mew.PID % 25) == pokemon.Nature ); )
+            {
+                // Attempt to set the nature
+                mew.SetPIDNature(pokemon.Nature);
+                Console.WriteLine("Nature after setting");
+                Console.WriteLine(mew.Nature);
+
+            }
+
+
+            Console.WriteLine(pokemon.isShiny);
+            // Set shiny after nature is set
             if (pokemon.isShiny)
             {
                 Console.WriteLine("Making Shiny");
                 MakeShiny(mew);
             }
 
-
+#if DEBUG
             // Check legality of the pokemon
-
             LegalityAnalysis legalitychecker = new LegalityAnalysis(mew);
-
-            #if DEBUG
+            
             if (legalitychecker.Valid)
             {
                 Console.WriteLine("Legal Egg created!");
             }
-            else {
+            else
+            {
                 Console.WriteLine("Illegal Egg Created!");
             }
-            #endif
+#endif
 
             box[boxIndex] = mew;
 
@@ -202,7 +218,9 @@ namespace pkhexEgglocke
 
             // this.currentSave.AddBoxData( , 1, 1 );
 
-            
+
+
+
         }
 
 
