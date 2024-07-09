@@ -12,5 +12,6 @@
     "moves": [ 344, 1, 124, 26 ],
     "movespp": [ 0, 0, 0, 0 ],
     "heldItem": 135,
-    "isShiny": false
+    "isShiny": false,
+    "generation": 4
 }

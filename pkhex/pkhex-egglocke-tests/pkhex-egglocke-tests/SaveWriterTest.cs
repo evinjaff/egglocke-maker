@@ -113,7 +113,30 @@ namespace pkhexEgglockeTests
 
             Assert.IsTrue(isShiny);
 
+
         }
+
+        [TestMethod]
+        public void TestNotShinyCorrect()
+        {
+            SaveWriter sw = new SaveWriter(testConstants.JOHTO_PLUS_SOUL_SILVER_SAVE);
+
+            EggCreator ec = EggCreator.decodeJSON(testConstants.BLANK_GEN4_MAREEP_VALID, true);
+
+            sw.addEgg(ec, 1);
+
+            // get egg at box index 1
+            IList<PKM> boxData = sw.getBox();
+
+            bool isShiny = boxData[1].IsShiny;
+
+            Assert.IsFalse(isShiny);
+
+
+        }
+
+
+
 
 
     }

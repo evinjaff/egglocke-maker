@@ -13,7 +13,8 @@
         "EV": [ 252, 252, 0, 0, 0, 0 ],
         "moves": [ 425, 262 ],
         "movespp": [ 30, 40 ],
-        "isShiny": true
+        "isShiny": true,
+        "generation":  4
     },
     {
         "dexNumber": 484,
@@ -29,7 +30,8 @@
         "EV": [ 252, 252, 0, 0, 0, 0 ],
         "moves": [ 425, 262 ],
         "movespp": [ 30, 40 ],
-        "isShiny": true
+        "isShiny": true,
+        "generation":  4
     },
     {
         "dexNumber": 487,
@@ -45,6 +47,7 @@
         "EV": [ 252, 252, 0, 0, 0, 0 ],
         "moves": [ 425, 262 ],
         "movespp": [ 30, 40 ],
-        "isShiny": true
+        "isShiny": true,
+        "generation":  4
     }
 ]

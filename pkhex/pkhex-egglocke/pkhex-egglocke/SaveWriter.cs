@@ -71,17 +71,6 @@ namespace pkhexEgglocke
         
         }
 
-        internal void MakeShiny(PK4 pokemon) { 
-            // Get IDs
-            ushort trainer_id = pokemon.TID16;
-            ushort secret_id = pokemon.SID16;
-            uint pid = ShinyUtil.GetShinyPID(trainer_id, secret_id, pokemon.PID, 0);
-
-            pokemon.PID = pid;  
-            
-           
-        }
-
         internal static bool IsShinyPID(uint pid, uint trainer_id, uint secret_id) { 
             return ((trainer_id ^ secret_id ^ (pid & 0xFFFF) ^ (pid >> 16)) < 8);
         }
@@ -130,87 +119,90 @@ namespace pkhexEgglocke
         
         }
 
-        public void addEgg( EggCreator pokemon, int boxIndex) {
+        private PK5 gen5Conversions(EggCreator pokemon, int originGeneration) {
 
-            
+            switch (originGeneration)
+            {
+                case 4:
+                    PK4 pk4 = pokemon.exportPK4(this.currentSave.TrainerTID7, this.currentSave.TrainerSID7);
+                    return pk4.ConvertToPK5();
 
-            // hacky start - hardcoded to gen 4 pokemon
-            PK4 mew = createDefaultEgg(this.currentSave.TrainerTID7, this.currentSave.TrainerSID7);
-
-            // Set the trainer ID according to the save file
-            mew.TrainerTID7 = this.currentSave.TrainerTID7;
-            mew.TrainerSID7 = this.currentSave.TrainerSID7;
-
-            // Standard Egg attributes
-            mew.IsEgg = pokemon.IsEgg;
-            mew.EggLocationDP = pokemon.EggLocationDP;
-            mew.MetLevel = pokemon.MetLevel;
-            mew.Ball = pokemon.ball;
-
-            
-            // Pokemon Info
-            mew.Species = pokemon.dexNumber;
-            mew.Nickname = pokemon.nickname;
-            mew.Language = pokemon.language;
-            mew.OriginalTrainerName = pokemon.OT;
-            mew.OriginalTrainerGender = pokemon.OTGender;
-
-            mew.HeldItem = pokemon.heldItem;
-            mew.Version = GameVersion.HG;
-            
-
-
-            mew.Ability = pokemon.Ability;
-
-            Console.WriteLine(pokemon.moves);
-            // Moveset
-
-            // Based on number of moves, set the moves
-            for (int i = 0; i < pokemon.moves.Length; i++) {
-                mew.SetMove(i, pokemon.moves[i]);
+                default:
+                    throw new Exception("Unsupported origin generation (" + originGeneration + ")");
             }
 
-            mew.IVs = pokemon.IV;
+        }
+
+        private PK6 gen6Conversions(EggCreator pokemon, int originGeneration) {
+
+            switch (originGeneration)
+            {
+
+                //case 3:
+                //    PK3 pk3 = pokemon.exportPK3(this.currentSave.TrainerTID7, this.currentSave.TrainerSID7);
+                //    PK4 pk4 = pk3.ConvertToPK4();
+                //    return pk4.ConvertToPK5().ConvertToPK6();
+
+                case 4:
+                    PK4 gen4_pk4 = pokemon.exportPK4(this.currentSave.TrainerTID7, this.currentSave.TrainerSID7);
+                    PK5 gen4_pk5 = gen4_pk4.ConvertToPK5();
+                    return gen4_pk5.ConvertToPK6();
+                //case 5:
+                //    PK5 gen5_pk5 = pokemon.exportPK5(this.currentSave.TrainerTID7, this.currentSave.TrainerSID7);
+                //    return gen5_pk5.ConvertToPK6();
+                default:
+                    throw new Exception("Unsupported origin generation (" + originGeneration + ")");
+
+            }
+
+        }
+
+
+        public void addEgg( EggCreator pokemon, int boxIndex) {
 
             var box = this.currentSave.BoxData;
 
-            // Logic to confirm that the PID matches the nature and shininess
-            for (; !( (Nature)(mew.PID % 25) == pokemon.Nature) && (pokemon.isShiny == pokemon.isShiny); )
+            // check game version
+
+            byte saveFileGeneration = this.currentSave.Generation;
+
+
+            if (pokemon.generation != saveFileGeneration)
             {
-                // Attempt to set the nature
-                mew.SetPIDNature(pokemon.Nature);
-                MakeShiny(mew);
+                // run conversion scripts here for non-native pokemon
+                Console.WriteLine("Converting from generation " + pokemon.generation + " to generation " + saveFileGeneration);
+                PKM convertedPokemon;
+                switch(saveFileGeneration) {
+                    case 5:
+                        convertedPokemon = gen5Conversions(pokemon, pokemon.generation);
+                        break;
+
+                    case 6:
+                        convertedPokemon = gen6Conversions(pokemon, pokemon.generation);
+                        break;
+                    default:
+                        throw new Exception("Unsupported save file generation (Generation " + saveFileGeneration + ")");
+                }
+
+                box[boxIndex] = convertedPokemon;
+            }
+            else {
+                // Native pokemon generation
+
+                switch (saveFileGeneration) {
+                    case 4:
+                        box[boxIndex] = pokemon.exportPK4(this.currentSave.TrainerTID7, this.currentSave.TrainerSID7);
+                        break;
+                    default:
+                        throw new Exception("Unsupported save file generation (Generation " + saveFileGeneration + ")");
+
+
+                }
 
             }
 
 
-
-
-            Console.WriteLine("Nature after setting");
-            Console.WriteLine(mew.Nature);
-
-#if DEBUG
-            // Check legality of the pokemon
-            LegalityAnalysis legalitychecker = new LegalityAnalysis(mew);
-            
-            if (legalitychecker.Valid)
-            {
-                Console.WriteLine("Legal Egg created!");
-            }
-            else
-            {
-                Console.WriteLine("Illegal Egg Created!");
-            }
-#endif
-
-            box[boxIndex] = mew;
-
-
-            // update box
             this.currentSave.BoxData = box;
-
-            // this.currentSave.AddBoxData( , 1, 1 );
-
 
 
 
