@@ -1,47 +1,50 @@
 [
-  {
-    "dexNumber": 483,
-    "ball": 2,
-    "language": 1,
-    "ability": 28,
-    "nature": 1,
-    "OT": "Dawn",
-    "OTGender": 1,
-    "nickname": "Dialga",
-    "IV": [ 31, 31, 31, 31, 31, 31 ],
-    "EV": [ 0, 0, 0, 0, 0, 0 ],
-    "moves": [ 425, 262 ],
-    "movespp": [ 30, 40 ]
-
-  },
-  {
-    "dexNumber": 484,
-    "ball": 2,
-    "language": 1,
-    "ability": 30,
-    "nature": 1,
-    "OT": "Dawn",
-    "OTGender": 1,
-    "nickname": "Palkia",
-    "IV": [ 31, 31, 31, 31, 31, 31 ],
-    "EV": [ 0, 0, 0, 0, 0, 0 ],
-    "moves": [ 425, 262 ],
-    "movespp": [ 30, 40 ]
-
-  },
-  {
-    "dexNumber": 487,
-    "ball": 2,
-    "language": 1,
-    "ability": 5,
-    "nature": 1,
-    "OT": "Dawn",
-    "OTGender": 1,
-    "nickname": "Giratina",
-    "IV": [ 31, 31, 31, 31, 31, 31 ],
-    "EV": [ 0, 0, 0, 0, 0, 0 ],
-    "moves": [ 425, 262 ],
-    "movespp": [ 30, 40 ]
-
-  }
+    {
+        "dexNumber": 483,
+        "ball": 2,
+        "language": 1,
+        "ability": 28,
+        "nature": 3,
+        "heldItem": 135,
+        "OT": "Dawn",
+        "OTGender": 1,
+        "nickname": "Dialga",
+        "IV": [ 31, 31, 31, 31, 31, 31 ],
+        "EV": [ 252, 252, 0, 0, 0, 0 ],
+        "moves": [ 425, 262 ],
+        "movespp": [ 30, 40 ],
+        "isShiny": true
+    },
+    {
+        "dexNumber": 484,
+        "ball": 2,
+        "language": 1,
+        "ability": 28,
+        "nature": 3,
+        "heldItem": 135,
+        "OT": "Dawn",
+        "OTGender": 1,
+        "nickname": "Palkia",
+        "IV": [ 31, 31, 31, 31, 31, 31 ],
+        "EV": [ 252, 252, 0, 0, 0, 0 ],
+        "moves": [ 425, 262 ],
+        "movespp": [ 30, 40 ],
+        "isShiny": true
+    },
+    {
+        "dexNumber": 487,
+        "ball": 2,
+        "language": 1,
+        "ability": 28,
+        "nature": 3,
+        "heldItem": 135,
+        "OT": "Dawn",
+        "OTGender": 1,
+        "nickname": "Giratina",
+        "IV": [ 31, 31, 31, 31, 31, 31 ],
+        "EV": [ 252, 252, 0, 0, 0, 0 ],
+        "moves": [ 425, 262 ],
+        "movespp": [ 30, 40 ],
+        "isShiny": true
+    }
 ]

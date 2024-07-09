@@ -24,7 +24,9 @@ from .models import Pokemon, Submitter
 
 PKHEX_GAMECODES = {
     "Pokemon SoulSilver": 8,
-    "Pokemon Diamond": 10
+    "Pokemon Diamond": 10,
+    "Pokemon Pearl": 11,
+    "Pokemon Platinum": 12,
 }
 
 @require_GET

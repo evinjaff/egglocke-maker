@@ -46,6 +46,11 @@ namespace pkhex_egglocke
                     return @"support/Complete_SoulSilver.sav";
                 case 10:
                     return @"support/Blank_Diamond.sav";
+                case 11:
+                    return @"support/Blank_Pearl.sav";
+                case 12:
+                    return @"support/Blank_Platinum.sav";
+
                 default:
                     throw new Exception("Invalid game code");
             }

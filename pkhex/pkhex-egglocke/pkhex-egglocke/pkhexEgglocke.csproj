@@ -20,6 +20,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="support\Blank_Diamond.sav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="support\Blank_Pearl.sav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="support\Blank_SoulSilver.sav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

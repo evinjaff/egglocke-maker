@@ -174,27 +174,20 @@ namespace pkhexEgglocke
 
             var box = this.currentSave.BoxData;
 
-            // FOR SOME REASON PKHEX.CORE DOESN'T F***ING SET NATURES CORRECTLY
-            // SO I NEED TO RUN THIS LOOP UNTIL IT KICKS OUT THE RIGHT NATURE
-            // THIS TOOK ME 2 HOURS TO FIGURE OUT
-            Console.WriteLine((Nature)(mew.PID % 25) == pokemon.Nature);
-            for (; !( (Nature)(mew.PID % 25) == pokemon.Nature ); )
+            // Logic to confirm that the PID matches the nature and shininess
+            for (; !( (Nature)(mew.PID % 25) == pokemon.Nature) && (pokemon.isShiny == pokemon.isShiny); )
             {
                 // Attempt to set the nature
                 mew.SetPIDNature(pokemon.Nature);
-                Console.WriteLine("Nature after setting");
-                Console.WriteLine(mew.Nature);
-
-            }
-
-
-            Console.WriteLine(pokemon.isShiny);
-            // Set shiny after nature is set
-            if (pokemon.isShiny)
-            {
-                Console.WriteLine("Making Shiny");
                 MakeShiny(mew);
+
             }
+
+
+
+
+            Console.WriteLine("Nature after setting");
+            Console.WriteLine(mew.Nature);
 
 #if DEBUG
             // Check legality of the pokemon
@@ -249,9 +242,18 @@ namespace pkhexEgglocke
         public string getOTString() {
             if (currentSave == null)
             {
-                throw new Exception("OT field in save file is null- possibly corrupted?");
+                throw new Exception("Save file is null- possibly corrupted?");
             }
             return this.currentSave.OT;
+        }
+
+        public IList<PKM> getBox() {
+            // return the box data
+            if (currentSave == null)
+            {
+                throw new Exception("Save File is null- possibly corrupted?");
+            }
+            return this.currentSave.BoxData;
         }
 
         // Other utility functions

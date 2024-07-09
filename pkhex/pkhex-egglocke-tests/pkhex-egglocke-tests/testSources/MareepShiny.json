@@ -1,0 +1,16 @@
+{
+    "dexNumber": 179,
+    "ball": 2,
+    "language": 1,
+    "ability": 99,
+    "nature": 3,
+    "OT": "Red",
+    "OTGender": 1,
+    "nickname": "sheepy2",
+    "IV": [ 31, 31, 31, 31, 31, 31 ],
+    "EV": [ 252, 252, 0, 0, 0, 0 ],
+    "moves": [ 344, 1, 124, 26 ],
+    "movespp": [ 0, 0, 0, 0 ],
+    "heldItem": 135,
+    "isShiny": true
+}
