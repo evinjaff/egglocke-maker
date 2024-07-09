@@ -16,7 +16,7 @@ namespace pkhexEgglockeTests
         // Gen 4 - Egg JSONs
         public static string BLANK_GEN4_MAREEP_VALID => Path.Combine(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"testSources"), "Mareep.json");
         public static string BLANK_GEN4_LEGENDARY_TRIO => Path.Combine(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"testSources"), "LegendaryTrio.json");
-
+        public static string BLANK_GEN4_SHINY_MAREEP_VALID => Path.Combine(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"testSources"), "MareepShiny.json");
 
         // Gen 6 - Omega Ruby Save File
         public static string BLANK_OMEGARUBY_SAVE => Path.Combine(Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), @"testSources"), "emptyOmegaRuby.sav");

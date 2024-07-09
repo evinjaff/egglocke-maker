@@ -1,0 +1,684 @@
+{% load static %}
+<h1> Hewwo </h1>
+
+<style>
+    * {
+      box-sizing: border-box;
+    }
+    
+    body {
+      font: 16px Arial;  
+    }
+    
+    /*the container must be positioned relative:*/
+    .autocomplete {
+      position: relative;
+      display: inline-block;
+    }
+    
+    input {
+      border: 1px solid transparent;
+      background-color: #f1f1f1;
+      padding: 10px;
+      font-size: 16px;
+    }
+    
+    input[type=text] {
+      background-color: #f1f1f1;
+      width: 100%;
+    }
+    
+    input[type=submit] {
+      background-color: DodgerBlue;
+      color: #fff;
+      cursor: pointer;
+    }
+    
+    .autocomplete-items {
+      position: absolute;
+      border: 1px solid #d4d4d4;
+      border-bottom: none;
+      border-top: none;
+      z-index: 99;
+      /*position the autocomplete items to be the same width as the container:*/
+      top: 100%;
+      left: 0;
+      right: 0;
+    }
+    
+    .autocomplete-items div {
+      padding: 10px;
+      cursor: pointer;
+      background-color: #fff; 
+      border-bottom: 1px solid #d4d4d4; 
+    }
+    
+    /*when hovering an item:*/
+    .autocomplete-items div:hover {
+      background-color: #e9e9e9; 
+    }
+    
+    /*when navigating through the items using the arrow keys:*/
+    .autocomplete-active {
+      background-color: DodgerBlue !important; 
+      color: #ffffff; 
+    }
+    </style>
+
+
+<form method="post" action"/submit/">{% csrf_token %}
+
+    <div class="autocomplete" style="width:300px;">
+        <input type="text"
+                id="myInput"
+                name="{{ pokemon_form.pokemon_species.name }}"
+                placeholder="Pokemon Species">
+    </div>
+
+    <br>
+    
+    <p>Intended Pokemon Generation</p>
+
+
+    {{ pokemon_form.pokemon_intended_generation }}
+
+    <p>Other Generations this Pokemon can be used in</p>
+
+    <p id="multiselect-tooltip"></p>
+
+    <select name="{{ pokemon_form.pokemon_compatible_generations.name }}" id="{{ pokemon_form.pokemon_compatible_generations.id_for_label }}" multiple>
+        <option value="1">Generation 1</option>
+        <option value="2">Generation 2</option>
+        <option value="3">Generation 3</option>
+        <option value="4">Generation 4</option>
+        <option value="5">Generation 5</option>
+        <option value="6">Generation 6</option>
+        <option value="7">Generation 7</option>
+        <option value="8">Generation 8</option>
+    </select> 
+
+
+
+    <p>Nickname (Limit {{nickname_character_limit}} characters) </p>
+
+    <div class="autocomplete" style="width:300px;">
+        <input type="text" 
+                name="{{ pokemon_form.pokemon_nickname.name }}" 
+                id="{{ pokemon_form.pokemon_nickname.id_for_label }}" 
+                class="{{ pokemon_form.pokemon_nickname.field.widget.attrs.class }}" 
+                style="{{ pokemon_form.pokemon_nickname.field.widget.attrs.style }}" 
+                placeholder="{{ pokemon_form.pokemon_nickname.field.widget.attrs.placeholder }}" 
+                value="{{ pokemon_form.pokemon_nickname.value|default_if_none:'' }}">
+    </div>
+    <br>
+
+    <p> Ability </p>
+
+    <div class="autocomplete" style="width:300px;">
+      <input type="text"
+              id="ability"
+              name="{{ pokemon_form.pokemon_ability.name }}"
+              placeholder="Pokemon Ability">
+    </div>
+
+    <input type="checkbox" name="{{ pokemon_form.pokemon_is_shiny.name }}" value="yes"> Shiny
+
+    <br>
+
+    <p>Held Item</p>
+    <div class="autocomplete" style="width:300px;">
+      <input type="text"
+              id="held_item"
+              name="{{ pokemon_form.pokemon_held_item.name }}"
+              placeholder="Held Item">
+    </div>
+
+
+    <br>
+
+    <h3>Stats:</h3>
+
+    <p>Nature:</p>
+
+    <select name="{{ pokemon_form.pokemon_nature.name }}" id="{{ pokemon_form.pokemon_nature.id_for_label }}">
+
+    </select>
+
+
+    <br>
+
+    <p> IVs/EVs </p>
+
+    <p>Total EVs: <span id="total-evs">0</span></p>
+
+    <input type="number" name="IV1" id="IV1" placeholder="IV1" min="0" max="31" value="31"> <input type="range" name="EV1" id="EV1" placeholder="EV1" min="0" max="252" value="0">
+    <br>
+    <input type="number" name="IV2" id="IV2" placeholder="IV2" min="0" max="31" value="31"> <input type="range" name="EV2" id="EV2" placeholder="EV2" min="0" max="252" value="0">
+    <br>
+    <input type="number" name="IV3" id="IV3" placeholder="IV3" min="0" max="31" value="31"> <input type="range" name="EV3" id="EV3" placeholder="EV3" min="0" max="252" value="0">
+    <br>
+    <input type="number" name="IV4" id="IV4" placeholder="IV4" min="0" max="31" value="31"> <input type="range" name="EV4" id="EV4" placeholder="EV4" min="0" max="252" value="0">
+    <br>
+    <input type="number" name="IV5" id="IV5" placeholder="IV5" min="0" max="31" value="31"> <input type="range" name="EV5" id="EV5" placeholder="EV5" min="0" max="252" value="0">
+    <br>
+    <input type="number" name="IV6" id="IV6" placeholder="IV6" min="0" max="31" value="31"> <input type="range" name="EV6" id="EV6" placeholder="EV6" min="0" max="252" value="0">
+
+    <br>
+
+    
+    
+    
+    
+    
+    
+
+    <br>
+
+    
+    <div id="general-email" class="form-group">
+        <input type="email" 
+        name="{{ submitter_form.email.name }}" 
+        id="{{ submitter_form.email.id_for_label }}" 
+        class="{{ submitter_form.email.field.widget.attrs.class }}" 
+        style="{{ submitter_form.email.field.widget.attrs.style }}" 
+        placeholder="{{ submitter_form.email.field.widget.attrs.placeholder }}" 
+        value="{{ submitter_form.email.value|default_if_none:'' }}" required>
+        
+        <div id="general-email-status-icon">
+            <img width=100 src="{% static 'pokepoll/img/loading.gif' %}" alt="Loading" id="email_validation_loading" hidden>
+            <img width=100 src="{% static 'pokepoll/img/positive.gif' %}" alt="Loading" id="email_validation_pos" hidden>
+            <img width=100 src="{% static 'pokepoll/img/negative.gif' %}" alt="Loading" id="email_validation_neg" hidden>
+        </div>
+
+
+    </div>
+
+    <div id="new-submitter-email" class="form-group" id="submitter-name-input" hidden>
+        <h5>Existing user not found, enter your name below and we will create a record and send you a secret password to edit your mons  </h5>
+
+        <input type="text" 
+               name="{{ submitter_form.name.name }}" 
+               id="{{ submitter_form.name.id_for_label }}" 
+               class="{{ submitter_form.name.field.widget.attrs.class }}" 
+               style="{{ submitter_form.name.field.widget.attrs.style }}" 
+               placeholder="{{ submitter_form.name.field.widget.attrs.placeholder }}" 
+               value="{{ submitter_form.name.value|default_if_none:'' }}">
+    </div>
+
+    <p>Moveset</p>
+
+    <div class="autocomplete" style="width:300px;">
+    <input type="text" 
+               name="pokemon_move1"
+               id="pokemon_move1"
+               value="None"
+    >
+    </div>
+    <br>
+    <br>
+
+    <div class="autocomplete" style="width:300px;">
+    <input type="text" 
+               name="pokemon_move2"
+               id="pokemon_move2"
+               value="None"
+    >
+    </div>
+    <br>
+    <br>
+
+    <div class="autocomplete" style="width:300px;">
+    <input type="text" 
+               name="pokemon_move3"
+                id="pokemon_move3"
+               value="None"
+    >
+    </div>
+    <br>
+    <br>
+
+    <div class="autocomplete" style="width:300px;">
+    <input type="text" 
+            name="pokemon_move4"
+            id="pokemon_move4"
+            value="None"
+    >
+    </div>
+    <br>
+    <br>
+
+
+
+    <input type="submit" value="Save">
+</form>
+
+<!-- Import JQuery -->
+<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+
+<!-- Import home-built libraries -->
+<script src="{% static 'pokepoll/pokeapifunctions.js' %}"></script>
+<script src="{% static 'pokepoll/uifunctions.js' %}"></script>
+<script src="{% static 'pokepoll/autocomplete_form_ui.js' %}"></script>
+
+<script>
+
+  // global pokemon generation
+  let POKEMON_GENERATION = {{ pokemon_generation }};
+
+  let validation_state = "loading";
+
+function validate() {
+    // if the email is empty, don't validate
+    if ($("#id_email").val() == "") {
+        presentEmtpyValidation();
+        return;
+    }
+
+    presentLoadingValidation();
+
+    // timeout to prevent multiple requests
+    setTimeout(function() {
+
+        formdata =  {
+            email: $("#{{ submitter_form.email.id_for_label }}").val(),
+            csrfmiddlewaretoken: "{{ csrf_token }}"
+        }
+
+        $.ajax({
+            url: "{% url 'pokepoll:validateSubmitter' %}",
+            type: "POST",
+            data: formdata,
+            success: function(data) {
+                let is_taken = data["is_taken"];
+                console.log(data)
+                if (is_taken) {
+                    presentPositiveValidation();
+                }
+                else {
+                    presentNegativeValidation();
+                }
+    
+    
+    
+            },
+            error: function(data) {
+                console.log(data);
+                $("#status").text("Error");
+            }
+    
+        });
+
+    }, 1000);
+
+
+
+
+
+}
+
+function presentPositiveValidation() {
+    $("#email_validation_neg").hide();
+    $("#email_validation_loading").hide();
+    $("#email_validation_pos").show();
+    validation_state = "positive";
+
+    $("#new-submitter-email").hide();
+}
+
+function presentNegativeValidation() {
+    $("#email_validation_neg").show();
+    $("#email_validation_loading").hide();
+    $("#email_validation_pos").hide();
+    validation_state = "negative";
+
+    $("#new-submitter-email").show();
+}
+
+function presentLoadingValidation() {
+    $("#email_validation_neg").hide();
+    $("#email_validation_loading").show();
+    $("#email_validation_pos").hide();
+    validation_state = "loading";
+
+    $("#new-submitter-email").hide();
+}
+
+function presentEmtpyValidation() {
+    $("#email_validation_neg").hide();
+    $("#email_validation_loading").hide();
+    $("#email_validation_pos").hide();
+    validation_state = "loading";
+
+    $("#new-submitter-email").hide();
+}
+
+// Event listeners
+
+// run validate if there's been a keystroke in the email field and it has been 5 seconds since the last keystroke
+$("#{{ submitter_form.email.id_for_label }}").on("keyup", function() {
+    validate();
+});
+
+
+</script>
+
+<script>
+
+// Global Variables
+let current_generation = 4;
+let NATURES;
+let NATURES_GEN_3;
+max_pokedex_entry = {{ max_pokedex_entry }};
+
+// Other Functions
+
+// Function to fetch and use the JSON data
+async function fetchPokemonNames(max_index) {
+    try {
+        // Fetch the JSON data from the server
+        const response = await fetch('{% static 'pokepoll/all_pokemon_names.json' %}');
+        // Check if the fetch was successful
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+        // Parse the JSON data
+        const pokemonNames = await response.json();
+        // Now you can use the `pokemonNames` variable which contains the parsed JSON data
+        console.log(pokemonNames);
+        return pokemonNames.slice(0, max_index);
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+        return []
+    }
+}
+
+async function fetchPokemonMoves(max_index){
+    try {
+        // Fetch the JSON data from the server
+        const response = await fetch('{% static 'pokepoll/all_moves.json' %}');
+        // Check if the fetch was successful
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+        // Parse the JSON data
+        const pokemonMoves = await response.json();
+        // Now you can use the `pokemonNames` variable which contains the parsed JSON data
+        console.log(pokemonMoves);
+        return pokemonMoves.slice(0, max_index);
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+        return []
+    }
+}
+
+async function getchPokemonNature(){
+    try {
+        // Fetch the JSON data from the server
+        const response = await fetch('{% static 'pokepoll/nature_enum.json' %}');
+        // Check if the fetch was successful
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+        // Parse the JSON data
+        const pokemonNatures = await response.json();
+        // Now you can use the `pokemonNames` variable which contains the parsed JSON data
+        return pokemonNatures; 
+
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+        return []
+    }
+}
+
+async function getchPokemonNatureGen3(){
+    try {
+        // Fetch the JSON data from the server
+        const response = await fetch('{% static 'pokepoll/gen3_nature_enum.json' %}');
+        // Check if the fetch was successful
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+        // Parse the JSON data
+        const pokemonNatures = await response.json();
+        // Now you can use the `pokemonNames` variable which contains the parsed JSON data
+        return pokemonNatures;
+        
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+        return []
+    }
+}
+
+async function fetchHeldItems(max_index){
+  try {
+    // Fetch the JSON data
+    {% with "pokepoll/held_items_to_id_gen_"|add:pokemon_generation|stringformat:"s"|add:".json" as filename %}
+        const response = await fetch("{% static filename %}");
+    {% endwith %}
+
+        
+
+        // Check if the fetch was successful
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+        // Parse the JSON data
+        const pokemonAbilities = await response.json();
+        // Now you can use the `pokemonNames` variable which contains the parsed JSON data
+        console.log(pokemonAbilities);
+        return Object.keys(pokemonAbilities);
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+        return []
+    }
+
+}
+
+async function fetchPokemonMoves(max_index){
+    try {
+        // Fetch the JSON data
+    {% with "pokepoll/pokemon_move_to_id_gen_"|add:pokemon_generation|stringformat:"s"|add:".json" as filename %}
+        const response = await fetch("{% static filename %}");
+    {% endwith %}
+    
+        
+
+        // Check if the fetch was successful
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+        // Parse the JSON data
+        const pokemonAbilities = await response.json();
+        // Now you can use the `pokemonNames` variable which contains the parsed JSON data
+        console.log(pokemonAbilities);
+        return Object.keys(pokemonAbilities);
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+        return []
+    }
+
+}
+
+async function fetchPokemonAbilities(max_index){
+    try {
+        // Fetch the JSON data
+    {% with "pokepoll/pokemon_ability_to_id_gen_"|add:pokemon_generation|stringformat:"s"|add:".json" as filename %}
+        const response = await fetch("{% static filename %}");
+    {% endwith %}
+    
+        
+
+        // Check if the fetch was successful
+        if (!response.ok) {
+            throw new Error('Network response was not ok ' + response.statusText);
+        }
+        // Parse the JSON data
+        const pokemonAbilities = await response.json();
+        // Now you can use the `pokemonNames` variable which contains the parsed JSON data
+        console.log(pokemonAbilities);
+        return Object.keys(pokemonAbilities);
+    } catch (error) {
+        console.error('There was a problem with the fetch operation:', error);
+        return []
+    }
+
+}
+
+
+// Register autocomplete listeners onto elements
+fetchPokemonNames(max_pokedex_entry).then(all_pokemon => {
+    autocomplete(document.getElementById("myInput"), all_pokemon);
+})
+
+/* fetchPokemonMoves(max_pokedex_entry).then(all_moves => {
+    autocomplete(document.getElementById("move1"), all_moves);
+    autocomplete(document.getElementById("move2"), all_moves);
+    autocomplete(document.getElementById("move3"), all_moves);
+    autocomplete(document.getElementById("move4"), all_moves);
+}) */
+
+fetchPokemonAbilities(max_pokedex_entry).then(all_abilities => {
+    autocomplete(document.getElementById("ability"), all_abilities);
+})
+
+fetchHeldItems(max_pokedex_entry).then(all_items => {
+    autocomplete(document.getElementById("held_item"), all_items);
+})
+
+// Register autocomplete onto all 4 moves
+fetchPokemonMoves(max_pokedex_entry).then(all_moves => {
+    for (let i = 1; i <= 4; i++) {
+        autocomplete(document.getElementById("pokemon_move" + i), all_moves);
+    }
+})
+
+
+
+let totalEvs = 0;
+let maxEvs = 510;
+let evs = [document.getElementById("EV1"), document.getElementById("EV2"), document.getElementById("EV3"), document.getElementById("EV4"), document.getElementById("EV5"), document.getElementById("EV6")];
+
+evs.forEach(ev => {
+    ev.addEventListener("input", function() {
+        totalEvs = 0;
+        evs.forEach(ev => {
+            totalEvs += parseInt(ev.value);
+        });
+
+        if (totalEvs > maxEvs) {
+            document.getElementById("total-evs").style.color = "red";
+            // Force the input back to the Sum
+            ev.value = parseInt(ev.value) - (totalEvs - maxEvs);
+            totalEvs = maxEvs;
+
+            
+        }
+        else {
+            document.getElementById("total-evs").style.color = "black";
+        }
+
+        document.getElementById("total-evs").innerText = totalEvs;
+
+    });
+});
+
+function fill_in_generations(selector_id, exclude_gen) {
+
+    let select = document.getElementById(selector_id);
+
+    // remove Existing Options
+    select.options.length = 0;
+
+    console.log(select.options)
+
+    let options = select.options;
+    for (let i = 1; i < 10; i++) {
+        // add an option 
+        let option = document.createElement("option");
+        option.text = `Generation ${i}`;
+        option.value = i;
+        if (i == exclude_gen) {
+            option.disabled = true;
+        }
+        options.add(option);
+
+    }
+}
+
+function fill_in_natures(selector_id, generation) {
+    let select = document.getElementById(selector_id);
+    let options = select.options;
+
+    let original_choice = select.value;
+
+    // clear options
+    options.length = 0;
+    let nature_json_to_use = generation == 3 ? NATURES_GEN_3 : NATURES;
+
+    for (let nature in nature_json_to_use) {
+        let option = document.createElement("option");
+        option.text = nature;
+        option.value = nature_json_to_use[nature];
+
+        if (option.value == original_choice) {
+            option.selected = true;
+        }
+
+        options.add(option);
+    }
+}
+
+
+
+// Runs all init functions- Nothing else should be called anywhere else
+async function init() {
+    
+    // Fetch
+
+    NATURES_GEN_3 = await getchPokemonNatureGen3()
+    NATURES = await getchPokemonNature();
+
+    console.log(NATURES_GEN_3);
+    console.log(NATURES);
+
+    // Fill ins
+    fill_in_generations("{{ pokemon_form.pokemon_compatible_generations.id_for_label }}", document.getElementById("{{ pokemon_form.pokemon_intended_generation.id_for_label }}").value);
+    fill_in_natures("{{ pokemon_form.pokemon_nature.id_for_label }}", current_generation);
+
+    
+
+    // populate the tooltip
+    document.getElementById("multiselect-tooltip").innerText = `Hold down the ${getMultiSelectToolForOS()} key to select multiple generations`
+
+
+
+    // Event Listeners: 
+
+    // Hook event listener to listen for value changes in id_pokemon_intended_generation
+    document.getElementById("{{ pokemon_form.pokemon_intended_generation.id_for_label }}").addEventListener("change", function() {
+        let selected = document.getElementById("{{ pokemon_form.pokemon_intended_generation.id_for_label }}").value;
+        console.log(selected);
+        current_generation = selected;
+        refreshUI();
+
+    });
+
+    
+
+}
+
+async function refreshUI() {
+    console.log("Calling UI Refresh")
+    console.log(`Status of Global Variables: \n NATURES: ${NATURES} \n NATURES_GEN_3: ${NATURES_GEN_3} \n Current Generation: ${current_generation} \n POKEMON_GENERATION: ${POKEMON_GENERATION} \n max_pokedex_entry: ${max_pokedex_entry}`)
+
+    fill_in_generations("{{ pokemon_form.pokemon_compatible_generations.id_for_label }}", current_generation);
+    fill_in_natures("{{ pokemon_form.pokemon_nature.id_for_label }}", current_generation);
+}
+
+init();
+
+
+
+/*initiate the autocomplete function on the "myInput" element, and pass along the countries array as possible autocomplete values:*/
+
+</script>

@@ -71,13 +71,75 @@ namespace pkhexEgglocke
         
         }
 
+        internal void MakeShiny(PK4 pokemon) { 
+            // Get IDs
+            ushort trainer_id = pokemon.TID16;
+            ushort secret_id = pokemon.SID16;
+            uint pid = ShinyUtil.GetShinyPID(trainer_id, secret_id, pokemon.PID, 0);
 
+            pokemon.PID = pid;  
+            
+           
+        }
+
+        internal static bool IsShinyPID(uint pid, uint trainer_id, uint secret_id) { 
+            return ((trainer_id ^ secret_id ^ (pid & 0xFFFF) ^ (pid >> 16)) < 8);
+        }
+
+
+        internal uint GenerateShinyPID(uint trainer_id, uint secret_id) { 
+            Random rand = new Random();
+            uint pid;
+            do
+            {
+                pid = (uint)rand.Next(0, 0x1000000);
+            } while (!IsShinyPID(pid, trainer_id, secret_id));
+
+            return pid;
+
+        }
+
+        private static PK4 createDefaultEgg(uint tid, uint sid) {
+            
+            return new PK4
+            {
+                TrainerTID7 = tid,
+                TrainerSID7 = sid,
+                IsEgg = true,
+                MetLevel = 1,
+                Ball = 4,
+                Species = 1,
+                Nickname = "Egg",
+                Language = 1,
+                OriginalTrainerName = "PKHeX",
+                OriginalTrainerGender = 0,
+                HeldItem = 0,
+                Ability = 0,
+                Nature = 0,
+                Move1 = 0,
+                Move1_PP = 0,
+                Move2 = 0,
+                Move2_PP = 0,
+                Move3 = 0,
+                Move3_PP = 0,
+                Move4 = 0,
+                Move4_PP = 0,
+                IVs = new int[] { 31, 31, 31, 31, 31, 31 }
+            };
+        
+        
+        }
 
         public void addEgg( EggCreator pokemon, int boxIndex) {
 
-            // hacky start - hardcoded to box 1
+            
 
-            var mew = new PK4();
+            // hacky start - hardcoded to gen 4 pokemon
+            PK4 mew = createDefaultEgg(this.currentSave.TrainerTID7, this.currentSave.TrainerSID7);
+
+            // Set the trainer ID according to the save file
+            mew.TrainerTID7 = this.currentSave.TrainerTID7;
+            mew.TrainerSID7 = this.currentSave.TrainerSID7;
 
             // Standard Egg attributes
             mew.IsEgg = pokemon.IsEgg;
@@ -85,7 +147,7 @@ namespace pkhexEgglocke
             mew.MetLevel = pokemon.MetLevel;
             mew.Ball = pokemon.ball;
 
-
+            
             // Pokemon Info
             mew.Species = pokemon.dexNumber;
             mew.Nickname = pokemon.nickname;
@@ -93,37 +155,53 @@ namespace pkhexEgglocke
             mew.OriginalTrainerName = pokemon.OT;
             mew.OriginalTrainerGender = pokemon.OTGender;
 
-           mew.HeldItem = 
+            mew.HeldItem = pokemon.heldItem;
+            mew.Version = GameVersion.HG;
             
 
 
             mew.Ability = pokemon.Ability;
-            mew.Nature = pokemon.Nature;
 
+            Console.WriteLine(pokemon.moves);
             // Moveset
-            mew.Move1 = (int)Move.ShadowSneak;
-            mew.Move1_PP = 30;
-            mew.Move2 = (int)Move.Memento;
-            mew.Move2_PP = 20;
 
+            // Based on number of moves, set the moves
+            for (int i = 0; i < pokemon.moves.Length; i++) {
+                mew.SetMove(i, pokemon.moves[i]);
+            }
 
             mew.IVs = pokemon.IV;
 
             var box = this.currentSave.BoxData;
 
+            // Logic to confirm that the PID matches the nature and shininess
+            for (; !( (Nature)(mew.PID % 25) == pokemon.Nature) && (pokemon.isShiny == pokemon.isShiny); )
+            {
+                // Attempt to set the nature
+                mew.SetPIDNature(pokemon.Nature);
+                MakeShiny(mew);
+
+            }
+
+
+
+
+            Console.WriteLine("Nature after setting");
+            Console.WriteLine(mew.Nature);
+
+#if DEBUG
             // Check legality of the pokemon
-
             LegalityAnalysis legalitychecker = new LegalityAnalysis(mew);
-
-            #if DEBUG
+            
             if (legalitychecker.Valid)
             {
                 Console.WriteLine("Legal Egg created!");
             }
-            else {
+            else
+            {
                 Console.WriteLine("Illegal Egg Created!");
             }
-            #endif
+#endif
 
             box[boxIndex] = mew;
 
@@ -133,7 +211,9 @@ namespace pkhexEgglocke
 
             // this.currentSave.AddBoxData( , 1, 1 );
 
-            
+
+
+
         }
 
 
@@ -162,9 +242,18 @@ namespace pkhexEgglocke
         public string getOTString() {
             if (currentSave == null)
             {
-                throw new Exception("OT field in save file is null- possibly corrupted?");
+                throw new Exception("Save file is null- possibly corrupted?");
             }
             return this.currentSave.OT;
+        }
+
+        public IList<PKM> getBox() {
+            // return the box data
+            if (currentSave == null)
+            {
+                throw new Exception("Save File is null- possibly corrupted?");
+            }
+            return this.currentSave.BoxData;
         }
 
         // Other utility functions

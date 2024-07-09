@@ -16,6 +16,7 @@
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.8.0" />
     <PackageReference Include="MSTest.TestAdapter" Version="3.1.1" />
     <PackageReference Include="MSTest.TestFramework" Version="3.1.1" />
+    <PackageReference Include="PKHeX.Core" Version="24.7.3" />
   </ItemGroup>
 
   <ItemGroup>
@@ -27,14 +28,13 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="testSources\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Update="testSources\emptySoulSilver.sav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="testSources\LegendaryTrio.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="testSources\MareepShiny.json">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="testSources\Mareep.json">

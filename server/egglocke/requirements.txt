@@ -1,4 +1,0 @@
-django
-mysqlclient
-django-ratelimit
-gunicorn

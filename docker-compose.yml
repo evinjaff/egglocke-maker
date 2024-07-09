@@ -1,0 +1,25 @@
+version: '3.8'
+
+services:
+  pkhex:
+    build: ./pkhex
+    container_name: pkhex_container
+    hostname: pkhex_host
+    ports:
+      - "1234:1234"
+    networks:
+      app_network:
+
+  server:
+    build: ./server
+    container_name: server_container
+    hostname: server_host
+    ports:
+      - "8443:8443"
+    networks:
+      app_network:
+
+networks:
+  app_network:
+    driver: bridge
+

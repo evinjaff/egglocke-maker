@@ -1,0 +1,26 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'pokepoll/style.css' %}">
+
+
+{% if latest_pokemon_list %}
+    <ul>
+    {% for pokemon in latest_pokemon_list %}
+    <img class="pokemon-icon" src="{% static 'pokepoll/img/placeholdersprite.png' %}" pokemon-dex="{{ pokemon.pokemon_species }}" pokemon_is_shiny={{pokemon.pokemon_is_shiny}}>
+    <li><a href="{% url 'pokepoll:detail' pokemon.id %}">{{ pokemon.pokemon_nickname }} (submitted by {{ pokemon.submitter.name }}) </a></li>
+    {% endfor %}
+    </ul>
+{% else %}
+    <p>No polls are available.</p>
+{% endif %}
+
+<!-- Import home-built libraries -->
+<script src="{% static 'pokepoll/pokeapifunctions.js' %}"></script>
+<script src="{% static 'pokepoll/uifunctions.js' %}"></script>
+
+<!-- Specific JS Code -->
+<script>
+
+    populateIcons();
+
+</script>

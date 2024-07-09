@@ -1,3 +1,4 @@
+using PKHeX.Core;
 using pkhexEgglocke;
 using System.Reflection;
 
@@ -57,6 +58,60 @@ namespace pkhexEgglockeTests
 
             sw.massAddEggs(testConstants.BLANK_GEN4_LEGENDARY_TRIO);
 
+
+        }
+
+        [TestMethod]
+        public void TestNaturesSetCorrectifNotShiny()
+        {
+            SaveWriter sw = new SaveWriter(testConstants.JOHTO_PLUS_SOUL_SILVER_SAVE);
+
+            EggCreator ec = EggCreator.decodeJSON(testConstants.BLANK_GEN4_MAREEP_VALID, true);
+
+            sw.addEgg(ec, 1);
+
+            // get egg at box index 1
+            IList<PKM> boxData = sw.getBox();
+
+            Nature expectedNature = Nature.Adamant;
+
+            Assert.AreEqual(expectedNature, boxData[1].Nature);
+
+        }
+
+        [TestMethod]
+        public void TestNaturesSetCorrectifShiny()
+        {
+            SaveWriter sw = new SaveWriter(testConstants.JOHTO_PLUS_SOUL_SILVER_SAVE);
+
+            EggCreator ec = EggCreator.decodeJSON(testConstants.BLANK_GEN4_SHINY_MAREEP_VALID, true);
+
+            sw.addEgg(ec, 1);
+
+            // get egg at box index 1
+            IList<PKM> boxData = sw.getBox();
+
+            Nature expectedNature = Nature.Adamant;
+
+            Assert.AreEqual(expectedNature, boxData[1].Nature);
+
+        }
+
+        [TestMethod]
+        public void TestShinyCorrect()
+        {
+            SaveWriter sw = new SaveWriter(testConstants.JOHTO_PLUS_SOUL_SILVER_SAVE);
+
+            EggCreator ec = EggCreator.decodeJSON(testConstants.BLANK_GEN4_SHINY_MAREEP_VALID, true);
+
+            sw.addEgg(ec, 1);
+
+            // get egg at box index 1
+            IList<PKM> boxData = sw.getBox();
+
+            bool isShiny = boxData[1].IsShiny;
+
+            Assert.IsTrue(isShiny);
 
         }
 
