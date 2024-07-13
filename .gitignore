@@ -406,3 +406,5 @@ server/egglocke/db.sqlite3
 server/server-venv/
 
 *.sqlite3
+
+server/DEBUG_post.json

@@ -223,7 +223,6 @@ def main():
     all_pokemon_names = get_all_pokemon_names(pokedex)
 
     # file 2: pokemon_name_to_id.json
-    pokemon_name_to_id = get_pokemon_name_to_id(pokedex)
 
     # file 3: ability lookup of ability_id to ability_name
     ability_lookup = decode_c_sharp_enum(ABILITY_ENUM_PATH)
@@ -232,8 +231,16 @@ def main():
     move_lookup = decode_c_sharp_enum(MOVE_ENUM_PATH)
 
 
-    with open(FILE_1_EXPORT_PATH, 'w') as f:
-        json.dump(pokemon_name_to_id, f)
+
+    for terminating_index in MAX_POKEDEX_DICT:
+        pokedex_slice = pokedex[:MAX_POKEDEX_DICT[terminating_index]]
+        pokemon_name_to_id = get_pokemon_name_to_id(pokedex_slice)
+
+        with open('../static/pokepoll/pokemon_name_to_id_gen_{}.json'.format(terminating_index), 'w') as f:
+            json.dump(pokemon_name_to_id, f)
+
+    # with open(FILE_1_EXPORT_PATH, 'w') as f:
+    #     json.dump(pokemon_name_to_id, f)
 
     with open(FILE_2_EXPORT_PATH, 'w') as f:
         json.dump(all_pokemon_names, f)

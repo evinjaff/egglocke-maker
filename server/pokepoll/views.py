@@ -201,7 +201,7 @@ def saveGenView(request):
                     "movespp": [0] * len(egg.pokemon_moves),
                     "heldItem": egg.pokemon_held_item,
                     "isShiny": egg.pokemon_is_shiny,
-                    "generation": 4,
+                    "generation": egg.pokemon_intended_generation,
 
                 })
 
