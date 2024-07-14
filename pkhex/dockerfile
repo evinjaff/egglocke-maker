@@ -19,8 +19,8 @@ RUN dotnet build --no-restore pkhex-egglocke
 RUN dotnet publish -c release -r linux-x64 --self-contained
 
 
-ENV PORT 1234
-EXPOSE 1234
+ENV PORT 1235
+EXPOSE 1235
 
 WORKDIR /source/pkhex-egglocke
 ENTRYPOINT ["dotnet", "run", "-api"]
