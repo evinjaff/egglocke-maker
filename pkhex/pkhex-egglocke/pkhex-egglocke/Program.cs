@@ -36,7 +36,7 @@ class Program {
             // Spin up the REST server
             using (var server = RestServerBuilder.UseDefaults().Build())
             {
-                server.Prefixes.Add("http://*:1234/");
+                server.Prefixes.Add("http://+:1235/");
 
                 server.Start();
 
