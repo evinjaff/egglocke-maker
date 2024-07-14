@@ -1,5 +1,7 @@
 
-function autocomplete(inp, arr) {
+function autocomplete(inp, arr, selectionCallback) {
+  // selectionCallback is a lambda that should be called when a selection is made
+
     /*the autocomplete function takes two arguments,
     the text field element and an array of possible autocompleted values:*/
     var currentFocus;
@@ -34,6 +36,12 @@ function autocomplete(inp, arr) {
                 /*close the list of autocompleted values,
                 (or any other open lists of autocompleted values:*/
                 closeAllLists();
+                if (selectionCallback){
+                    selectionCallback();
+                }
+                else {
+                    console.log("No selection callback provided");
+                }
             });
             a.appendChild(b);
           }

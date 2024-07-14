@@ -86,7 +86,7 @@ class DetailView(generic.DetailView):
         context = super().get_context_data(**kwargs)
         
         context["moves_pretty"] = []
-        with open(os.path.join(settings.BASE_DIR, 'pokepoll/static/pokepoll/pokemon_move_to_id_gen_{}.json'.format(settings.POKEMON_GENERATION))) as f:
+        with open(os.path.join(settings.BASE_DIR, 'pokepoll/static/pokepoll/pokemon_move_to_id_gen_{}.json'.format(context['pokemon'].pokemon_intended_generation))) as f:
             move_dex = json.load(f)
             # find the keys that match the values in the pokemon_moves list
             for move in context['pokemon'].pokemon_moves:
@@ -120,8 +120,7 @@ class PokemonForm(forms.ModelForm):
                   'pokemon_moves', 
                   'pokemon_movespp', 
                   'pokemon_is_shiny', 
-                  'pokemon_intended_generation', 
-                  'pokemon_compatible_generations']
+                  'pokemon_intended_generation']
 
 class SubmitterForm(forms.ModelForm):
     class Meta:
@@ -148,9 +147,15 @@ class CaptchaTestForm(forms.Form):
     for game in PKHEX_GAMECODES:
         pokemon_choices += ((PKHEX_GAMECODES[game], game),)
 
+    generation_choices = ()
+
+    for generation in range(1, 10):
+        generation_choices += ((generation, "Generation {}".format(generation)),)
+
     pokemon_game = forms.ChoiceField(choices=pokemon_choices, required=True, label="Game")
-    
-    num_eggs = forms.IntegerField(min_value=1, max_value=50)
+    egg_or_level1 = forms.ChoiceField(choices=[(1, "Egg"), (0, "Level 1")], required=True, label="Egg or Level 1")
+    allowed_generations = forms.MultipleChoiceField(choices=generation_choices, required=True, label="Allowed Generations")
+    num_eggs = forms.IntegerField(min_value=1, max_value=50, required=True, label="Number of Eggs")
 
 import random
 from django.db.models import Max, Min
@@ -158,9 +163,13 @@ from django.db.models import Max, Min
 def get_random_objects(model, count):
     max_id = model.objects.aggregate(max_id=Max("id"))['max_id']
     min_id = model.objects.aggregate(min_id=Min("id"))['min_id']
-    
+
     if max_id is None or min_id is None:
         return model.objects.none()  # No objects in the model
+    
+    # check quantity of objects in the model
+    if count < model.objects.count():
+        raise ValueError("Count must be greater than the number of objects in the model")
     
     random_ids = set()
     while len(random_ids) < count:
@@ -259,6 +268,14 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
 
         # add validation here
 
+        # get the intended generation of the pokemon
+        # if the generation is not in the range of 1-8, return an error
+        pokemon_generation = int(request.POST.get('pokemon_intended_generation'))
+        if pokemon_generation not in range(1, 9):
+            return Http404("Invalid Generation")
+        
+        
+
         # if email is in database
         foreign_key = None
         pokemon_species = None
@@ -314,7 +331,7 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
         pokemon_held_item = request.POST.get('pokemon_held_item')
 
         # Translate strings to ints
-        with open(os.path.join(settings.BASE_DIR, 'pokepoll/static/pokepoll/held_items_to_id_gen_{}.json'.format(settings.POKEMON_GENERATION))) as f:
+        with open(os.path.join(settings.BASE_DIR, 'pokepoll/static/pokepoll/held_items_to_id_gen_{}.json'.format(pokemon_generation))) as f:
             item_dex = json.load(f)
             if pokemon_held_item in item_dex:
                 pokemon_held_item = item_dex[request.POST.get('pokemon_held_item')]
@@ -323,7 +340,7 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
 
         pokemon_moves = []
         # populate moves with the values from the form
-        with open(os.path.join(settings.BASE_DIR, 'pokepoll/static/pokepoll/pokemon_move_to_id_gen_{}.json'.format(settings.POKEMON_GENERATION))) as f:
+        with open(os.path.join(settings.BASE_DIR, 'pokepoll/static/pokepoll/pokemon_move_to_id_gen_{}.json'.format(pokemon_generation))) as f:
             move_dex = json.load(f)
             for i in range(4):
                 move = request.POST.get('pokemon_move' + str(i + 1))
@@ -361,6 +378,8 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
             'pokemon_held_item': pokemon_held_item,
             'pokemon_moves': pokemon_moves,
             'pokemon_nature': pokemon_nature,
+            'pokemon_intended_generation': pokemon_generation,
+
             
         }
 

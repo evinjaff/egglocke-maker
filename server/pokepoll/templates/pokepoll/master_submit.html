@@ -538,10 +538,16 @@ async function fetchPokemonNames(generation) {
         // Parse the JSON data
         const pokemonNames = await response.json();
         // Now you can use the `pokemonNames` variable which contains the parsed JSON data
+        
+        pokemonNamesArray = [];
+        // iterate through json by key
+        for (let key in pokemonNames) {
+            pokemonNamesArray[pokemonNames[key]-1] = key;
+        }
 
-        console.log(pokemonNames);
+        console.log(pokemonNamesArray);
 
-        return pokemonNames
+        return pokemonNamesArray
 
     } catch (error) {
         console.error('There was a problem with the fetch operation:', error);
@@ -608,10 +614,10 @@ async function fetchHeldItems(pokemon_generation){
 
 }
 
-async function fetchPokemonMoves(pokemon_generation){
+async function fetchPokemonMoves(generation){
     try {
         // Fetch the JSON data
-    const response = await fetch(STATIC_MOVES_JSON_PATHS[pokemon_generation - 1]);
+    const response = await fetch(STATIC_MOVES_JSON_PATHS[generation - 1]);
     
         
 
@@ -631,14 +637,10 @@ async function fetchPokemonMoves(pokemon_generation){
 
 }
 
-async function fetchPokemonAbilities(max_index){
+async function fetchPokemonAbilities(generation){
     try {
         // Fetch the JSON data
-    {% with "pokepoll/pokemon_ability_to_id_gen_"|add:pokemon_generation|stringformat:"s"|add:".json" as filename %}
-        const response = await fetch("{% static filename %}");
-    {% endwith %}
-    
-        
+        const response = await fetch(STATIC_ABILITY_JSON_PATHS[generation - 1]);
 
         // Check if the fetch was successful
         if (!response.ok) {
@@ -659,7 +661,8 @@ async function fetchPokemonAbilities(max_index){
 
 // Register autocomplete listeners onto elements
 fetchPokemonNames(current_generation).then(all_pokemon => {
-    autocomplete(document.getElementById("myInput"), all_pokemon);
+    console.log(all_pokemon);
+    autocomplete(document.getElementById("myInput"), all_pokemon, refreshPokemonPreview);
     COMPLETE_POKEDEX = all_pokemon;
 })
 
@@ -794,7 +797,7 @@ async function init() {
         let selected = document.getElementById("{{ pokemon_form.pokemon_intended_generation.id_for_label }}").value;
         console.log(selected);
         current_generation = selected;
-        refreshUI();
+        refreshUI(generation_changed=true);
         refreshPokemonPreview();
 
     });
@@ -809,20 +812,35 @@ async function init() {
 
 async function refreshUI(generation_changed=false) {
     console.log("Calling UI Refresh")
-    console.log(`Status of Global Variables: \n NATURES: ${NATURES} \n NATURES_GEN_3: ${NATURES_GEN_3} \n Current Generation: ${current_generation} \n POKEMON_GENERATION: ${POKEMON_GENERATION} \n max_pokedex_entry: ${max_pokedex_entry}`)
+    console.log(`Status of Global Variables: \n NATURES: ${NATURES} \n NATURES_GEN_3: ${NATURES_GEN_3} \n Current Generation: ${current_generation} \n POKEMON_GENERATION: ${POKEMON_GENERATION} \n`)
 
     //fill_in_generations("{{ pokemon_form.pokemon_compatible_generations.id_for_label }}", current_generation);
     fill_in_natures("{{ pokemon_form.pokemon_nature.id_for_label }}", current_generation);
 
     // update ability and held item autocomplete if the generation changed
     if (generation_changed) {
-        fetchPokemonAbilities(max_pokedex_entry).then(all_abilities => {
+        console.log("Generation Changed to " + current_generation);
+
+        fetchPokemonNames(current_generation).then(all_pokemon => {
+            autocomplete(document.getElementById("myInput"), all_pokemon, refreshPokemonPreview);
+            COMPLETE_POKEDEX = all_pokemon;
+        })
+
+        fetchPokemonAbilities(current_generation).then(all_abilities => {
             autocomplete(document.getElementById("ability"), all_abilities);
         })
 
-        fetchHeldItems(max_pokedex_entry).then(all_items => {
+        fetchHeldItems(current_generation).then(all_items => {
             autocomplete(document.getElementById("held_item"), all_items);
         })
+
+        // Register autocomplete onto all 4 moves
+        fetchPokemonMoves(current_generation).then(all_moves => {
+            for (let i = 1; i <= 4; i++) {
+                autocomplete(document.getElementById("pokemon_move" + i), all_moves);
+            }
+        })
+
     }
 
 }
