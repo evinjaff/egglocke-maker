@@ -168,7 +168,7 @@ def get_random_objects(model, count):
         return model.objects.none()  # No objects in the model
     
     # check quantity of objects in the model
-    if count < model.objects.count():
+    if count > model.objects.count():
         raise ValueError("Count must be greater than the number of objects in the model")
     
     random_ids = set()
@@ -188,8 +188,12 @@ def saveGenView(request):
         # Validate the form: the captcha field will automatically
         # check the input
         if form.is_valid():
+
+            egg_quantity = form.cleaned_data['num_eggs']
+            print("egg_quantity: {}".format(egg_quantity))
+
             # get 5 eggs from the database
-            five_eggs = get_random_objects(Pokemon, 3)
+            five_eggs = get_random_objects(Pokemon, egg_quantity)
 
             # create a list of dictionaries to hold the egg data
             egg_data = []
