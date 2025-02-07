@@ -30,12 +30,10 @@ ALLOWED_HOSTS = [
     "egglocke.evievi.gay",
     "localhost",
     "127.0.0.1",
-    "0.0.0.0"
 ]
 
 CSRF_TRUSTED_ORIGINS = [ 
-    "https://polite-snails-cross.loca.lt",
-    "https://polite-snails-cross.loca.lt/"
+
  ]
 
 
