@@ -1,0 +1,158 @@
+import re
+import random
+import os
+import json
+from django.conf import settings
+from django.utils import timezone
+
+
+def parseShowdownFormatGen4(block):
+	
+	patterns = {
+	"name_item": re.compile(r"(\w+(?:-\w+)*)\s*@\s*([\w\S ]+)", re.MULTILINE),
+	"ability": re.compile(r"Ability:\s*([\w\S ]+)", re.MULTILINE),
+	"nature": re.compile(r"(\w+)\sNature", re.MULTILINE),
+	"moves": re.compile(r"- ([\w\S ]+)", re.MULTILINE),
+	}
+
+	parsed_data = {}
+
+	# Extract name and item
+	match = patterns["name_item"].search(block)
+	if match:
+		parsed_data["name"], parsed_data["item"] = match.group(1), match.group(2)
+	else:
+		print("not found for name/item")
+
+	# Extract ability
+	match = patterns["ability"].search(block)
+	if match:
+		parsed_data["ability"] = match.group(1)
+	else:
+		print("not found for ability")
+
+	# Extract Nature
+	match = patterns["nature"].search(block)
+	
+	if match:
+		parsed_data["nature"] = match.group(1)
+	else:
+		print("not found for nature")
+
+	# Extract Moves
+	parsed_data["moves"] = patterns["moves"].findall(block)
+
+	# strip trailing space out of the tail end
+	for i in parsed_data:
+		if type(parsed_data[i]) == str:
+			parsed_data[i] = parsed_data[i].rstrip()
+		elif type(parsed_data[i]) == list:
+			if len(parsed_data[i]) > 0 and type(parsed_data[i][0]) == str:
+				string_arr = [""] * len(parsed_data[i])
+
+				for list_idx in range(len(parsed_data[i])):
+					string_arr[list_idx] = parsed_data[i][list_idx].rstrip()
+
+				parsed_data[i] = string_arr
+
+
+	# parse IVs and EVs
+	parsed_data["evs"], parsed_data["ivs"] = parse_evs_ivs(block)
+
+
+	return parsed_data
+
+def parse_evs_ivs(text):
+	stats_order = ["HP", "Atk", "Def", "SpA", "SpD", "Spe"]
+	
+	evs = [0] * 6
+	ivs = [ random.randint(0, 31) for i in range (1,7) ]  # Default IVs in Pokémon will be random integers from 0 - 31
+
+	ev_match = re.search(r"EVs:\s*([\d\s/AtkDefSpASpDSpe]*)", text)
+	iv_match = re.search(r"IVs:\s*([\d\s/AtkDefSpASpDSpe]*)", text)
+
+	if ev_match:
+		for entry in ev_match.group(1).split(" / "):
+			parts = entry.split()
+			if len(parts) == 2 and parts[1] in stats_order:
+				evs[stats_order.index(parts[1])] = int(parts[0])
+
+	if iv_match:
+		for entry in iv_match.group(1).split(" / "):
+			parts = entry.split()
+			if len(parts) == 2 and parts[1] in stats_order:
+				ivs[stats_order.index(parts[1])] = int(parts[0])
+
+	return evs, ivs
+
+
+def parseShowdownFormat(gen, raw):
+
+	if gen == 4:
+		return parseShowdownFormatGen4(raw)
+
+
+def validate_good_showdown_format(gen, parse_result, dry_run=True, wet_run_creds=None):
+	print(parse_result)
+
+	# go through parse results and add objects
+
+	# get name from species
+
+	parsed_pokemon_species = None
+	with open(os.path.join(settings.BASE_DIR, 'pokepoll/static/pokepoll/pokemon_name_to_id.json')) as f:
+		pokedex = json.load(f)
+
+		if parse_result["name"] in pokedex:
+			parsed_pokemon_species = pokedex[parse_result["name"]]
+
+	parsed_ivs = parse_result["ivs"]
+	parsed_evs = parse_result["evs"]
+
+	parsed_ability = parse_result["ability"]
+	
+	parsed_item = parse_result["item"]
+	# Translate strings to ints
+	with open(os.path.join(settings.BASE_DIR, 'pokepoll/static/pokepoll/held_items_to_id_gen_{}.json'.format(gen))) as f:
+		item_dex = json.load(f)
+		if parsed_item in item_dex:
+			parsed_item = item_dex[parsed_item]
+		else:
+			parsed_item = 0
+
+	parsed_moves = parse_result["moves"]
+	parsed_nature = parse_result["nature"]
+	
+	kw_args = { 'pokemon_nickname': "",
+		'pokemon_species': parsed_pokemon_species,
+		'pub_date': timezone.now(),
+		# 'submitter_id': foreign_key,
+		'pokemon_is_shiny': False,
+		'pokemon_IV': parsed_ivs,
+		'pokemon_EV': parsed_evs,
+		'pokemon_ability': parsed_ability,
+		'pokemon_held_item': parsed_item,
+		'pokemon_moves': parsed_moves,
+		'pokemon_nature': parsed_nature,
+		'pokemon_intended_generation': gen,
+	}
+
+	# synchronize non-pokemon related creds into object
+	if not dry_run:
+		for cred in wet_run_creds:
+			kw_args[cred] = wet_run_creds[cred]
+
+	# if any non-nullable fields are None, error
+	non_nullable_fields = ["pokemon_species", "pokemon_ability"]
+	bad_fields = []
+	for non_nullable_field in non_nullable_fields:
+
+		if kw_args[non_nullable_field] == None:
+			bad_fields.append(non_nullable_field)
+
+	if len(bad_fields) > 0:
+		return {"code": 400, "bad_fields": bad_fields}
+
+
+
+	return {"code": 200, "kw_args": kw_args}

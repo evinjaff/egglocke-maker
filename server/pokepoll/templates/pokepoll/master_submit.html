@@ -156,8 +156,22 @@
     </div>
 
 
+
+    <div class="container" id="choice">
+
+        Use the builder, or paste a showdown set below
+
+        <div class="row">
+            <div class="col text-center">
+                <button id="builder" onclick="document.getElementById('main_app').toggleAttribute('hidden')">Native Builder</button>
+            </div>
+            <div class="col text-center">
+                <button id="paste" onclick="document.getElementById('pastebin').toggleAttribute('hidden')">Paste Pokemon Showdown Set (beta)</button>
+            </div>
+
+    </div>
     
-    <div class="container" id="main_app">
+    <div class="container" id="main_app" hidden>
         <form method="post" action"/submit/">{% csrf_token %}
 
         <div class="row">
@@ -354,7 +368,23 @@
     </form>
     </div>
    
+    <div class="container" id="pastebin" hidden>
+        <div class="row">
 
+            <form method="post" action="/pokepoll/submit-showdown/">{% csrf_token %}
+
+            <input type="text" name="showdown" value="true" hidden>
+
+            <textarea name="pastebox" placeholder="Paste Showdown Set Here">
+
+            </textarea>
+
+            <input type="submit" value="Save">
+
+            </form>
+            
+        </div>
+    </div>
 
 
 

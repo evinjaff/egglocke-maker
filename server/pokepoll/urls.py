@@ -13,6 +13,7 @@ urlpatterns = [
     path("submit/", views.MasterPokemonAndSubmitterView.as_view(), name="submit"),
     path("validateSubmitter/", views.validate_submitter, name="validateSubmitter"),
     path("downloadSaveFile/", views.saveGenView, name="downloadSaveFile"),
+    path("submit-showdown/", views.showdown_decoder, name="submit-showdown" )
     
     
 
