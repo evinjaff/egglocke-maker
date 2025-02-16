@@ -329,7 +329,7 @@
                 <br>
                 <br>
 
-                <div id="general-email" class="form-group">
+                <!-- <div id="general-email" class="form-group">
                     <input type="email" 
                     name="{{ submitter_form.email.name }}" 
                     id="{{ submitter_form.email.id_for_label }}" 
@@ -357,7 +357,7 @@
                            style="{{ submitter_form.name.field.widget.attrs.style }}" 
                            placeholder="{{ submitter_form.name.field.widget.attrs.placeholder }}" 
                            value="{{ submitter_form.name.value|default_if_none:'' }}">
-                </div>
+                </div> -->
 
 
 
@@ -379,12 +379,27 @@
 
             </textarea>
 
+
+            <input type="text" 
+            name="{{ submitter_form.tripcode.name }}" 
+            id="{{ submitter_form.tripcode.id_for_label }}" 
+            class="{{ submitter_form.tripcode.field.widget.attrs.class }}" 
+            style="{{ submitter_form.tripcode.field.widget.attrs.style }}" 
+            placeholder="{{ submitter_form.tripcode.field.widget.attrs.placeholder }}" 
+            value="{{ submitter_form.tripcode.value|default_if_none:'' }}">
+
+
             <input type="submit" value="Save">
 
             </form>
             
         </div>
     </div>
+
+    
+
+
+        
 
 
 
@@ -405,49 +420,6 @@
   let validation_state = "loading";
 
 function validate() {
-    // if the email is empty, don't validate
-    if ($("#id_email").val() == "") {
-        presentEmtpyValidation();
-        return;
-    }
-
-    presentLoadingValidation();
-
-    // timeout to prevent multiple requests
-    setTimeout(function() {
-
-        formdata =  {
-            email: $("#{{ submitter_form.email.id_for_label }}").val(),
-            csrfmiddlewaretoken: "{{ csrf_token }}"
-        }
-
-        $.ajax({
-            url: "{% url 'pokepoll:validateSubmitter' %}",
-            type: "POST",
-            data: formdata,
-            success: function(data) {
-                let is_taken = data["is_taken"];
-                console.log(data)
-                if (is_taken) {
-                    presentPositiveValidation();
-                }
-                else {
-                    presentNegativeValidation();
-                }
-    
-    
-    
-            },
-            error: function(data) {
-                console.log(data);
-                $("#status").text("Error");
-            }
-    
-        });
-
-    }, 1000);
-
-
 
 
 

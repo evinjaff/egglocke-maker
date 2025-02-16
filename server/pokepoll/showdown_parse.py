@@ -6,10 +6,15 @@ from django.conf import settings
 from django.utils import timezone
 
 
+# Format Strings for validation errors
+MOVE_VALIDATION_ERROR = "Move {} is not a valid move"
+HELD_ITEM_VALIDATION_ERROR = "Item {} is not a valid held item"
+POKEMON_SPECIES_VALIDATION_ERROR = "Pokemon {} is not a valid pokemon"
+
 def parseShowdownFormatGen4(block):
 	
 	patterns = {
-	"name_item": re.compile(r"(\w+(?:-\w+)*)\s*@\s*([\w\S ]+)", re.MULTILINE),
+	"name_nickname_item": re.compile(r"(?:([\w\s]+) \()?(\w+(?:-\w+)*)\)?\s*@\s*([\w\S ]+)", re.MULTILINE),
 	"ability": re.compile(r"Ability:\s*([\w\S ]+)", re.MULTILINE),
 	"nature": re.compile(r"(\w+)\sNature", re.MULTILINE),
 	"moves": re.compile(r"- ([\w\S ]+)", re.MULTILINE),
@@ -18,9 +23,15 @@ def parseShowdownFormatGen4(block):
 	parsed_data = {}
 
 	# Extract name and item
-	match = patterns["name_item"].search(block)
+	match = patterns["name_nickname_item"].search(block)
 	if match:
-		parsed_data["name"], parsed_data["item"] = match.group(1), match.group(2)
+		nickname = match.group(1)  # May be None if there's no nickname
+		name = match.group(2)      # Always the Pokémon's actual name
+		item = match.group(3)      # Always the item
+
+		parsed_data["name"] = name
+		parsed_data["nickname"] = nickname if nickname else name  # Store None if no nickname
+		parsed_data["item"] = item
 	else:
 		print("not found for name/item")
 
@@ -102,10 +113,13 @@ def validate_good_showdown_format(gen, parse_result, dry_run=True, wet_run_creds
 	parsed_pokemon_species = None
 	with open(os.path.join(settings.BASE_DIR, 'pokepoll/static/pokepoll/pokemon_name_to_id.json')) as f:
 		pokedex = json.load(f)
-
 		if parse_result["name"] in pokedex:
 			parsed_pokemon_species = pokedex[parse_result["name"]]
+		else:
+			raise ValueError(POKEMON_SPECIES_VALIDATION_ERROR.format(parsed_pokemon_species))
 
+
+	parsed_nickname = parse_result["nickname"]
 	parsed_ivs = parse_result["ivs"]
 	parsed_evs = parse_result["evs"]
 
@@ -118,12 +132,40 @@ def validate_good_showdown_format(gen, parse_result, dry_run=True, wet_run_creds
 		if parsed_item in item_dex:
 			parsed_item = item_dex[parsed_item]
 		else:
-			parsed_item = 0
+			raise ValueError(HELD_ITEM_VALIDATION_ERROR.format(parsed_item))
+		
+		
 
 	parsed_moves = parse_result["moves"]
 	parsed_nature = parse_result["nature"]
+
+	# convert nature to ID
+	with open(os.path.join(settings.BASE_DIR, 'pokepoll/static/pokepoll/nature_enum.json')) as f:
+		nature_dex = json.load(f)
+		if parsed_nature in nature_dex:
+			parsed_nature = nature_dex[parsed_nature]
+		else:
+			parsed_nature = 0
+
+	# convert ability to ID
+	with open(os.path.join(settings.BASE_DIR, 'pokepoll/static/pokepoll/pokemon_ability_to_id_gen_{}.json'.format(gen))) as f:
+		ability_dex = json.load(f)
+		if parsed_ability in ability_dex:
+			parsed_ability = ability_dex[parsed_ability]
+		else:
+			parsed_ability = 0
+
+	# convert moves to ID
+	with open(os.path.join(settings.BASE_DIR, 'pokepoll/static/pokepoll/pokemon_move_to_id_gen_{}.json'.format(gen))) as f:
+		move_dex = json.load(f)
+
+		for parsed_move_idx in range(len(parsed_moves)):
+			if parsed_moves[parsed_move_idx] in move_dex:
+				parsed_moves[parsed_move_idx] = move_dex[parsed_moves[parsed_move_idx]]
+			else:
+				raise ValueError( MOVE_VALIDATION_ERROR.format(parsed_moves[parsed_move_idx]) )
 	
-	kw_args = { 'pokemon_nickname': "",
+	kw_args = { 'pokemon_nickname': parsed_nickname,
 		'pokemon_species': parsed_pokemon_species,
 		'pub_date': timezone.now(),
 		# 'submitter_id': foreign_key,
@@ -146,7 +188,6 @@ def validate_good_showdown_format(gen, parse_result, dry_run=True, wet_run_creds
 	non_nullable_fields = ["pokemon_species", "pokemon_ability"]
 	bad_fields = []
 	for non_nullable_field in non_nullable_fields:
-
 		if kw_args[non_nullable_field] == None:
 			bad_fields.append(non_nullable_field)
 

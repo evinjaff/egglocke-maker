@@ -7,18 +7,19 @@ from django.utils import timezone
 # we just want to know who submitted the form
 class Submitter(models.Model):
     name = models.CharField(max_length=200)
-    email = models.EmailField(max_length=254, unique=True)
+    # email = models.EmailField(max_length=254, unique=True)
+    tripcode = models.TextField(max_length=128)
 
     @classmethod
     def get_default_parent_key(cls):
         submitter, created = cls.objects.get_or_create(
-            name="Anonymous", email="anon@jaffboys.com"
+            name="Anonymous", tripcode="0" * 64
         )
 
         return submitter.pk
 
     def __str__(self):
-        return self.name + " (" + self.email + ")"
+        return self.name + " (" + self.tripcode + ")"
     
 class Pokemon(models.Model):
     pokemon_nickname = models.CharField(max_length=10, default="")

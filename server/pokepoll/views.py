@@ -6,7 +6,7 @@ from django.db.models import F
 from django.views import generic
 from django.utils import timezone
 from django import forms
-from django.forms import TextInput, EmailInput
+from django.forms import TextInput
 import json
 # import variables in settings.py
 from django.conf import settings
@@ -127,17 +127,17 @@ class PokemonForm(forms.ModelForm):
 class SubmitterForm(forms.ModelForm):
 	class Meta:
 		model = Submitter
-		fields = ['email', 'name']
+		fields = ['tripcode', 'name']
 		widgets = {
 			'name': TextInput(attrs={
 				'class': "form-control",
 				'style': 'max-width: 300px;',
 				'placeholder': 'Name'
 				}),
-			'email': EmailInput(attrs={
+			'tripcode': TextInput(attrs={
 				'class': "form-control", 
 				'style': 'max-width: 300px;',
-				'placeholder': 'Email'
+				'placeholder': 'Anonymous username code'
 				})
 		}
 
@@ -291,21 +291,21 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
 		IVs = [31, 31, 31, 31, 31, 31]
 		EVs = [0, 0, 0, 0, 0, 0]
 
-		if Submitter.objects.filter(email=request.POST.get('email')).exists():
-			print("email: {} | ".format(request.POST.get('email')))
-			# since emails are unique, we can get the first one
-			emails = Submitter.objects.get(email=request.POST.get('email'))
-			foreign_key = emails.id
+		# if Submitter.objects.filter(email=request.POST.get('email')).exists():
+		# 	print("email: {} | ".format(request.POST.get('email')))
+		# 	# since emails are unique, we can get the first one
+		# 	emails = Submitter.objects.get(email=request.POST.get('email'))
+		# 	foreign_key = emails.id
 
-		else:
-			# create a new submitter
-			submitter = Submitter(
-				name=request.POST.get('name'),
-				email=request.POST.get('email')
-			)
+		# else:
+		# 	# create a new submitter
+		# 	submitter = Submitter(
+		# 		name=request.POST.get('name'),
+		# 		email=request.POST.get('email')
+		# 	)
 
-			submitter.save()
-			foreign_key = submitter.id
+		# 	submitter.save()
+		# 	foreign_key = submitter.id
 
 		# translate species to pokedex number
 		with open(os.path.join(settings.BASE_DIR, 'pokepoll/static/pokepoll/pokemon_name_to_id.json')) as f:
@@ -435,13 +435,6 @@ def vote(request, question_id):
 		# with POST data. This prevents data from being posted twice if a
 		# user hits the Back button.
 		return HttpResponseRedirect(reverse("pokepoll:results", args=(question.id,)))
-	
-def validate_submitter(request):
-	email = request.POST.get('email', None)
-	data = {
-		'is_taken': Submitter.objects.filter(email__iexact=email).exists()
-	}
-	return JsonResponse(data)
 
 def showdown_decoder(request):
 	# lazy import to prevent makemigrations breaking
@@ -465,5 +458,6 @@ def showdown_decoder(request):
 			**validationStatus["kw_args"]
 		)
 
-		# pokemon.save()
-		return JsonResponse({"hewwo": ":3"})
+		pokemon.save()
+		
+		return  HttpResponseRedirect(reverse('pokepoll:home'))
