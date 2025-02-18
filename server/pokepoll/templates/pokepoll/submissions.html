@@ -1,18 +1,25 @@
 {% load static %}
 
 <link rel="stylesheet" href="{% static 'pokepoll/style.css' %}">
+<link rel="stylesheet" href="{% static 'pokepoll/dark-style.css' %}">
 
+<div class="site-wrapper">
 
-{% if latest_pokemon_list %}
-    <ul>
-    {% for pokemon in latest_pokemon_list %}
-    <img class="pokemon-icon" src="{% static 'pokepoll/img/placeholdersprite.png' %}" pokemon-dex="{{ pokemon.pokemon_species }}" pokemon_is_shiny={{pokemon.pokemon_is_shiny}}>
-    <li><a href="{% url 'pokepoll:detail' pokemon.id %}">{{ pokemon.pokemon_nickname }} (submitted by {{ pokemon.submitter.name }}) </a></li>
-    {% endfor %}
-    </ul>
-{% else %}
-    <p>No polls are available.</p>
-{% endif %}
+    {% if latest_pokemon_list %}
+        <ul>
+        {% for pokemon in latest_pokemon_list %}
+        <img class="pokemon-icon" src="{% static 'pokepoll/img/placeholdersprite.png' %}" pokemon-dex="{{ pokemon.pokemon_species }}" pokemon_is_shiny={{pokemon.pokemon_is_shiny}}>
+        <li><a href="{% url 'pokepoll:detail' pokemon.id %}">{{ pokemon.pokemon_nickname }} (submitted by {{ pokemon.submitter.name }}) </a></li>
+        {% endfor %}
+        </ul>
+    {% else %}
+        <p>No pokemon have been submitted </p>
+
+        <img src="{% static 'pokepoll/img/wally_defeat.gif' %}">
+
+    {% endif %}
+
+</div>
 
 <!-- Import home-built libraries -->
 <script src="{% static 'pokepoll/pokeapifunctions.js' %}"></script>

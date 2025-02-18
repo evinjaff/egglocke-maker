@@ -2,6 +2,10 @@
 
 <img class="pokemon-sprite" src="{% static 'pokepoll/img/placeholdersprite.png' %}">
 
+<link rel="stylesheet" href="{% static 'pokepoll/dark-style.css' %}">
+
+<div class="site-wrapper">
+
 <h3 id="pokemon-species"></h3>
 
 {{ pokemon }}
@@ -24,6 +28,8 @@
         <li>{{ move }}</li>
     {% endfor %}
 </ul>
+
+</div>
 
 <!-- Import JQuery -->
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>

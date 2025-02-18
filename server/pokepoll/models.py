@@ -5,21 +5,23 @@ from django.utils import timezone
 
 # User class - since we don't need login functionality, 
 # we just want to know who submitted the form
+from django.contrib.auth.models import User
+from django.db import models
+
 class Submitter(models.Model):
+    user = models.OneToOneField(
+        User, on_delete=models.CASCADE, null=True, blank=True, unique=True
+    )
     name = models.CharField(max_length=200)
-    # email = models.EmailField(max_length=254, unique=True)
-    tripcode = models.TextField(max_length=128)
 
     @classmethod
     def get_default_parent_key(cls):
-        submitter, created = cls.objects.get_or_create(
-            name="Anonymous", tripcode="0" * 64
-        )
-
+        submitter, created = cls.objects.get_or_create(name="Anonymous", user=None)
         return submitter.pk
 
     def __str__(self):
-        return self.name + " (" + self.tripcode + ")"
+        return self.name if self.user is None else self.user.get_full_name() or self.user.username
+
     
 class Pokemon(models.Model):
     pokemon_nickname = models.CharField(max_length=10, default="")

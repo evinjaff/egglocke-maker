@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>User Registration</title>
+</head>
+<body>
+    <h1>Register</h1>
+    <form id="registrationForm">
+        {% csrf_token %}  <label for="username">Username:</label>
+        <input type="text" id="username" name="username" required><br><br>
+
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required><br><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" required><br><br>
+
+        <label for="name">Name (Optional):</label>
+        <input type="text" id="name" name="name"><br><br>
+
+        <button type="submit">Register</button>
+    </form>
+
+    <div id="message"></div>  <script>
+        const form = document.getElementById('registrationForm');
+        const messageDiv = document.getElementById('message');
+
+        form.addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent default form submission
+
+            const formData = new FormData(form);
+
+            fetch('/pokepoll/register/', { // Replace '/register/' with your actual URL
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value, // Include CSRF token
+                },
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.message) {
+                    messageDiv.textContent = data.message;
+                    messageDiv.style.color = "green"; // Style success message
+                    form.reset(); // Clear the form after successful registration
+                } else if (data.error) {
+                    messageDiv.textContent = data.error;
+                    messageDiv.style.color = "red"; // Style error message
+                }
+            })
+            .catch(error => {
+                messageDiv.textContent = "An error occurred during registration.";
+                messageDiv.style.color = "red"; // Style error message
+                console.error('Error:', error);
+            });
+        });
+    </script>
+</body>
+</html>

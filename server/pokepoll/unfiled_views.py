@@ -127,18 +127,13 @@ class PokemonForm(forms.ModelForm):
 class SubmitterForm(forms.ModelForm):
 	class Meta:
 		model = Submitter
-		fields = ['tripcode', 'name']
+		fields = ['name']
 		widgets = {
 			'name': TextInput(attrs={
 				'class': "form-control",
 				'style': 'max-width: 300px;',
 				'placeholder': 'Name'
 				}),
-			'tripcode': TextInput(attrs={
-				'class': "form-control", 
-				'style': 'max-width: 300px;',
-				'placeholder': 'Anonymous username code'
-				})
 		}
 
 class CaptchaTestForm(forms.Form):
@@ -291,22 +286,6 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
 		IVs = [31, 31, 31, 31, 31, 31]
 		EVs = [0, 0, 0, 0, 0, 0]
 
-		# if Submitter.objects.filter(email=request.POST.get('email')).exists():
-		# 	print("email: {} | ".format(request.POST.get('email')))
-		# 	# since emails are unique, we can get the first one
-		# 	emails = Submitter.objects.get(email=request.POST.get('email'))
-		# 	foreign_key = emails.id
-
-		# else:
-		# 	# create a new submitter
-		# 	submitter = Submitter(
-		# 		name=request.POST.get('name'),
-		# 		email=request.POST.get('email')
-		# 	)
-
-		# 	submitter.save()
-		# 	foreign_key = submitter.id
-
 		# translate species to pokedex number
 		with open(os.path.join(settings.BASE_DIR, 'pokepoll/static/pokepoll/pokemon_name_to_id.json')) as f:
 			pokedex = json.load(f)
@@ -412,7 +391,6 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
 		#     'submitter_form': submitter_form,
 		#     'pokemon_form': song_form
 		# })
-
 
 def vote(request, question_id):
 	question = get_object_or_404(Pokemon, pk=question_id)
