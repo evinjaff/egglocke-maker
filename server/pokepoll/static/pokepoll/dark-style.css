@@ -134,6 +134,7 @@ body {
   .masthead {
     position: fixed;
     top: 0;
+    width: 100;
   }
   /* Start the vertical centering */
   .site-wrapper-inner {

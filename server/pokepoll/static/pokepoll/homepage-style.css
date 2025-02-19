@@ -62,10 +62,19 @@
   .masthead {
     position: fixed;
     top: 0;
+    width: 100;
   }
   /* Start the vertical centering */
   .site-wrapper-inner {
     vertical-align: middle;
   }
 
+}
+
+.egg-submissions-gadget {
+  height: 20%;
+}
+
+.inner-home-site {
+  height: 90%;
 }

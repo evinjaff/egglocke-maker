@@ -1,7 +1,9 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Login</title>
+    <link rel="stylesheet" href="{% static 'pokepoll/dark-style.css' %}">
 </head>
 <body>
     <h1>Login</h1>
@@ -26,6 +28,6 @@
         <button type="submit">Login</button>
     </form>
 
-    <p>Don't have an account? <a href="">Sign up here</a>.</p> {# Example signup link #}
+    <p>Don't have an account? <a href="{% url 'pokepoll:register-user' %}">Register here</a>.</p>
 </body>
 </html>

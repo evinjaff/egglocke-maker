@@ -29,6 +29,8 @@ def login_view(request):
         form = AuthenticationForm()
     return render(request, 'pokepoll/login.html', {'form': form})
 
+
+
 def logout_view(request):
     logout(request)
     # Redirect to a success page.
