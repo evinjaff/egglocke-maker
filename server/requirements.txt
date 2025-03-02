@@ -6,3 +6,4 @@ django-simple-captcha
 gunicorn
 djangorestframework
 markdown
+gevent

@@ -408,3 +408,6 @@ server/server-venv/
 *.sqlite3
 
 server/DEBUG_post.json
+
+# Ignore built static directory
+server/static/*
