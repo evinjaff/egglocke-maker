@@ -1,4 +1,5 @@
 version: '3.8'
+name: 'egglocke-maker'
 
 services:
   pkhex:
@@ -12,7 +13,9 @@ services:
       app_network:
 
   server:
-    build: ./server
+    build: 
+      context: ./server
+      dockerfile: Dockerfile
     container_name: server_container
     hostname: server_host
     ports:
