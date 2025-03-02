@@ -20,8 +20,8 @@ RUN python manage.py migrate
 # set debug to false
 ENV DEBUG=False
 
-# run debug server
-CMD [ "python", "./manage.py", "runserver", "0.0.0.0:8443" ]
+# Run Gunicorn
+CMD ["gunicorn", "--bind", "0.0.0.0:8443", "egglocke.wsgi:application"]
 
 EXPOSE 8443
 # debug, expose all ports
