@@ -1,7 +1,7 @@
 import os
 from django.shortcuts import render, get_object_or_404
 from django.template import loader
-from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse
+from django.http import Http404, HttpResponse, HttpResponseRedirect, JsonResponse, HttpResponseServerError
 from django.db.models import F
 from django.views import generic
 from django.utils import timezone
@@ -17,7 +17,7 @@ from django.core.cache import cache
 from django_ratelimit.decorators import ratelimit
 from django.utils.decorators import method_decorator
 from captcha.fields import CaptchaField
-
+from django.contrib.auth.models import User
 
 
 # Create your views here.
@@ -177,7 +177,8 @@ def get_random_objects(model, count):
 
 
 
-def saveGenView(request):
+def saveGenView(request, request_failed=False):
+	request_failed = request.GET.get('request_failed') == 'True'
 	if request.POST:
 		form = CaptchaSaveGenForm(request.POST)
 		
@@ -225,21 +226,38 @@ def saveGenView(request):
 			with open("DEBUG_post.json", "w") as f:
 				json.dump(request_body, f)
 
-			print("Calling {}".format(api_endpoint))
-			print("Request data: {}".format(request_body))
-			# call the microservice internally
-			savefile_results = requests.post(api_endpoint, json=request_body)
-
-			print("Response: {}".format(savefile_results.text))
-			# return the save file, with the filename set to the user's email
-			return HttpResponse(savefile_results.content, content_type='application/octet-stream', headers={'Content-Disposition': 'attachment; filename="savefile.sav"'})
+			try:
+				# call the microservice internally
+				savefile_results = requests.post(api_endpoint, json=request_body)
+				print("Response: {}".format(savefile_results.text))
+				# return the save file, with the filename set to the user's email
+				return HttpResponse(savefile_results.content, content_type='application/octet-stream', headers={'Content-Disposition': 'attachment; filename="savefile.sav"'})
+				
+			except:
+				return HttpResponseRedirect(reverse('pokepoll:downloadSaveFile') + "?request_failed=True")
 			
-
 	else:
 		form = CaptchaSaveGenForm()
 
-	return render(request, 'pokepoll/save_gen.html', {'form': form})
+	return render(request, 'pokepoll/save_gen.html', {'form': form, 'request_failed': request_failed})
 
+
+def get_submitter_for_user(user: User):
+    """
+    Retrieves the Submitter instance associated with the given User.
+
+    Args:
+        user (User): The User instance.
+
+    Returns:
+        Submitter or None: The Submitter instance if found, otherwise None.
+    """
+    try:
+        submitter = Submitter.objects.get(user=user)
+        print("Got submitter: {}".format(submitter))
+        return submitter
+    except Submitter.DoesNotExist:
+        return None
 
 @method_decorator(ratelimit(key='ip', rate='3/m', method='POST', block=True), name='dispatch')
 @method_decorator(ratelimit(key='ip', rate='20/m', method='GET', block=True), name='dispatch')
@@ -268,19 +286,11 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
 
 		# add validation here
 
-		print(request.showdown)
-
 		# get the intended generation of the pokemon
 		# if the generation is not in the range of 1-8, return an error
-		pokemon_generation = int(request.POST.get('pokemon_intended_generation'))
-		if pokemon_generation not in range(1, 9):
-			return Http404("Invalid Generation")
-		
-		
-		
+		pokemon_generation = 4
 
-		# if email is in database
-		foreign_key = None
+
 		pokemon_species = None
 		IVs = [31, 31, 31, 31, 31, 31]
 		EVs = [0, 0, 0, 0, 0, 0]
@@ -352,7 +362,6 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
 		kw_args = { 'pokemon_nickname': request.POST.get('pokemon_nickname'),
 			'pokemon_species': pokemon_species,
 			'pub_date': timezone.now(),
-			'submitter_id': foreign_key,
 			'pokemon_is_shiny': pokemon_is_shiny,
 			'pokemon_IV': IVs,
 			'pokemon_EV': EVs,
@@ -364,6 +373,16 @@ class MasterPokemonAndSubmitterView(generic.TemplateView):
 			
 		}
 
+		# Attach user if authenticated
+		if request.user.is_authenticated:
+			submitter = get_submitter_for_user(request.user)
+			if submitter:
+				# Do something with the submitter
+				print(f"Submitter found: {submitter}")
+				kw_args['submitter'] = get_submitter_for_user(request.user)
+			else:
+				print("No submitter found for this user.")
+		
 		print(kw_args)
 		
 
@@ -417,24 +436,40 @@ def showdown_decoder(request):
 	# lazy import to prevent makemigrations breaking
 	from .showdown_parse import parseShowdownFormat, validate_good_showdown_format
 
+	SHOWDOWN_SEPARATOR = "----"
+
 	print(request.POST)
 
-	showdownPokemon = parseShowdownFormat(settings.POKEMON_GENERATION, str(request.POST.get("pastebox", None)) )
+	pokemon_showdown_body = str(request.POST.get("pastebox", None))
 
-	# validate showdownPokemon has the valid fields
-	validationStatus = validate_good_showdown_format(settings.POKEMON_GENERATION, showdownPokemon)
-	# construct pokemon object
+	pokemon_showdown_body_splits = pokemon_showdown_body.split(SHOWDOWN_SEPARATOR)
 
-	print(validationStatus)
+	parsed_pokemon : list[Pokemon] = list()
+	
+	user_to_attach = None
+	# Attach user if authenticated
+	if request.user.is_authenticated:
+		user_to_attach = get_submitter_for_user(request.user)
 
-	if validationStatus["code"] == 400:
-		return JsonResponse({"bad_fields": validationStatus["bad_fields"]})
-	elif validationStatus["code"] == 200:
+	for showdown_code in pokemon_showdown_body_splits:
+		showdownPokemon = parseShowdownFormat(settings.POKEMON_GENERATION, showdown_code )
 
-		pokemon = Pokemon(
-			**validationStatus["kw_args"]
-		)
+		# validate showdownPokemon has the valid fields
+		validationStatus = validate_good_showdown_format(settings.POKEMON_GENERATION, showdownPokemon)
+		# construct pokemon object
+		if user_to_attach != None:
+			validationStatus["kw_args"]["submitter"] = user_to_attach
 
+		if validationStatus["code"] == 400:
+			return JsonResponse({"bad_fields": validationStatus["bad_fields"]})
+		elif validationStatus["code"] == 200:
+			pokemon = Pokemon(
+				**validationStatus["kw_args"]
+			)
+
+		parsed_pokemon.append(pokemon)
+
+	for pokemon in parsed_pokemon:
 		pokemon.save()
-		
-		return  HttpResponseRedirect(reverse('pokepoll:home'))
+	
+	return  HttpResponseRedirect(reverse('pokepoll:home'))

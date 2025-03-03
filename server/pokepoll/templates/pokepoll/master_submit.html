@@ -164,13 +164,6 @@
                     <input type="checkbox" name="{{ pokemon_form.pokemon_is_shiny.name }}" value="yes"> Shiny
                 
                     <br>
-                    
-                    <p>Intended Pokemon Generation</p>
-                
-                
-                    {{ pokemon_form.pokemon_intended_generation }}
-                
-                    <p>Other Generations this Pokemon can be used in</p>
                 
                     <p id="multiselect-tooltip"></p>
                 
@@ -328,14 +321,16 @@
    
     <div class="container" id="pastebin" hidden>
         <div class="row">
-
-            <p> NOTE: Please use a Gen 4 format in showdown for the builder. The parser may not work otherwise. </p>
+            
+            <div class="alert alert-info" role="alert" >
+                Please use a Gen 4 format in showdown for the builder. The parser may not work otherwise.
+            </div>
 
             <form method="post" action="/pokepoll/submit-showdown/">{% csrf_token %}
 
             <input type="text" name="showdown" value="true" hidden>
 
-            <textarea name="pastebox" class="showdown-input" placeholder="Paste Showdown Set Here">
+            <textarea rows="10" name="pastebox" class="showdown-input" placeholder="Paste Showdown Set Here">
 
             </textarea>
 
@@ -343,7 +338,10 @@
             {% if user.is_authenticated %}
                 <p>Submitting as user: {{ user.username }} ({{ user.id }}) </p>
             {% else %}
-                <p>NOTE: You are not logged in, your submission will be attributed as "Anonymous."</p>
+            
+            <div class="alert alert-warning" role="alert" >
+                You are not logged in. Your submission will be attributed as anonymous
+            </div>
 
                 <p>Please <a href="{% url 'pokepoll:login' %}">log in here</a> if you would like your contribution attributed.</p>
             {% endif %}

@@ -18,6 +18,7 @@ def parseShowdownFormatGen4(block):
 	"ability": re.compile(r"Ability:\s*([\w\S ]+)", re.MULTILINE),
 	"nature": re.compile(r"(\w+)\sNature", re.MULTILINE),
 	"moves": re.compile(r"- ([\w\S ]+)", re.MULTILINE),
+	"is_shiny": re.compile(r"[Ss][Hh][Ii][Nn][Yy]:\s*[Yy][Ee][Ss]")
 	}
 
 	parsed_data = {}
@@ -69,6 +70,13 @@ def parseShowdownFormatGen4(block):
 
 	# parse IVs and EVs
 	parsed_data["evs"], parsed_data["ivs"] = parse_evs_ivs(block)
+
+	# parse shiny status
+	match = patterns["is_shiny"].search(block)
+	if match:
+		parsed_data["is_shiny"] = True
+	else:
+		parsed_data["is_shiny"] = False
 
 
 	return parsed_data
@@ -169,7 +177,7 @@ def validate_good_showdown_format(gen, parse_result, dry_run=True, wet_run_creds
 		'pokemon_species': parsed_pokemon_species,
 		'pub_date': timezone.now(),
 		# 'submitter_id': foreign_key,
-		'pokemon_is_shiny': False,
+		'pokemon_is_shiny': parse_result["is_shiny"],
 		'pokemon_IV': parsed_ivs,
 		'pokemon_EV': parsed_evs,
 		'pokemon_ability': parsed_ability,

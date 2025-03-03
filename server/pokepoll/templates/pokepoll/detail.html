@@ -1,38 +1,100 @@
 {% load static %}
+<!DOCTYPE html>
+<html>
 
-<img class="pokemon-sprite" src="{% static 'pokepoll/img/placeholdersprite.png' %}">
+<head>
+    <title>Submission: {{ pokemon }}</title>
 
-<link rel="stylesheet" href="{% static 'pokepoll/styles/dark-style.css' %}">
+    <meta name="description" content="Login">
+    <meta name="keywords" content="Game Tool, Pokemon, Egglocke">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<div class="site-wrapper">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"
+        integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <link rel="stylesheet" href="{% static 'pokepoll/styles/dark-style.css' %}">
+</head>
 
-<h3 id="pokemon-species"></h3>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{% url 'pokepoll:home' %}">Evii's Egglocke Maker :3</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" aria-current="page" href="{% url 'pokepoll:home' %}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'pokepoll:submit' %}">Submit an egg!</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'pokepoll:submissions' %}">View Submissions!</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'pokepoll:downloadSaveFile' %}">Request a save file</a>
+                    </li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                    <li class="nav-item">
+                        <a class="nav-link">{{ user.username }} ({{ user.id }})</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'pokepoll:logout' %}">Logout</a>
+                    </li>
+                    {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link">You are not logged in</a>
+                    </li>
 
-{{ pokemon }}
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'pokepoll:login' %}">Login</a>
+                    </li>
+                    {% endif %}
 
 
-<p>Submitted by {{ pokemon.submitter.name }} </p>
 
-<h2>Submissime owo</h2>
 
-<h3> IVs and EVs </h3>
-<p> IVs: {{ pokemon.pokemon_IV }} </p>
-<p> EVs: {{ pokemon.pokemon_EV }} </p>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-<h3> Nature </h3>
-<p> {{ pokemon.pokemon_nature }} </p>
+    <img class="pokemon-sprite" src="{% static 'pokepoll/img/placeholdersprite.png' %}">
 
-<h3> Moves </h3>
-<ul>
-    {% for move in moves_pretty %}
-        <li>{{ move }}</li>
-    {% endfor %}
-</ul>
+    <div class="site-wrapper">
 
-</div>
+        <h3 id="pokemon-species"></h3>
+
+        {{ pokemon }}
+
+
+        <p>Submitted by {{ pokemon.submitter.name }} </p>
+
+        <h3> IVs and EVs </h3>
+        <p> IVs: {{ pokemon.pokemon_IV }} </p>
+        <p> EVs: {{ pokemon.pokemon_EV }} </p>
+
+        <h3> Nature </h3>
+        <p> {{ pokemon.pokemon_nature }} </p>
+
+        <h3> Moves </h3>
+        <ul>
+            {% for move in moves_pretty %}
+            <li>{{ move }}</li>
+            {% endfor %}
+        </ul>
+
+    </div>
+
+</body>
 
 <!-- Import JQuery -->
-<script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.min.js"
+    integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
 
 <!-- Import home-built libraries -->
 <script src="{% static 'pokepoll/pokeapifunctions.js' %}"></script>
@@ -52,8 +114,10 @@
         $("#pokemon-species").text(speciesName);
     }
 
-    
+
 
     populatePokemonName();
 
 </script>
+
+</html>

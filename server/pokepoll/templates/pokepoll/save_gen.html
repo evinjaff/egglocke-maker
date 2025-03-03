@@ -64,15 +64,20 @@
 
 <h2>Request a Save File</h2>
 
+{% if request_failed %}
+<div class="alert alert-danger" role="alert" >
+    Unable to contact the save file generation service. Please try again later
+</div>
+{% else %}
+{% endif %}
+
 <form method="post">
+
     {% csrf_token %}
     {{ form.as_p }}
     <input type="submit" value="Save">
 
 </form>
-
-
-<h2>Submissime owo</h2>
 
 </body>
 

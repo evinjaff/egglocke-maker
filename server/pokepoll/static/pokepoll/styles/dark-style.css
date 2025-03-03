@@ -67,6 +67,11 @@ textarea {
   padding: 30px;
 }
 
+/* Fix text shadow appearing in alerts  */
+.alert {
+  text-shadow: none;
+}
+
 
 /*
  * Header
