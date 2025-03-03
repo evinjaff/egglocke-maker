@@ -26,14 +26,17 @@ SECRET_KEY = 'django-insecure-*jj%!hrihqu#16ty75zqz^ue+$q=gbh2za#_tu)if9*!j5!7lz
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "20.42.93.202",
     "egglocke.evievi.gay",
+    "www.egglocke.evievi.gay",
     "localhost",
     "127.0.0.1",
 ]
 
 CSRF_TRUSTED_ORIGINS = [ 
-
+    "egglocke.evievi.gay",
+    "www.egglocke.evievi.gay",
+    "localhost",
+    "127.0.0.1",
  ]
 
 
