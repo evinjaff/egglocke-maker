@@ -28,8 +28,7 @@ PKHEX_GAMECODES = {
 	"Pokemon SoulSilver": 8,
 	"Pokemon Diamond": 10,
 	"Pokemon Pearl": 11,
-	"Pokemon Platinum": 12,
-	"Pokemon Black 2": 23,
+	"Pokemon Platinum": 12
 }
 
 @require_GET
@@ -136,7 +135,7 @@ class SubmitterForm(forms.ModelForm):
 				}),
 		}
 
-class CaptchaTestForm(forms.Form):
+class CaptchaSaveGenForm(forms.Form):
 	captcha = CaptchaField()
 	
 	pokemon_choices = ()
@@ -151,7 +150,7 @@ class CaptchaTestForm(forms.Form):
 
 	pokemon_game = forms.ChoiceField(choices=pokemon_choices, required=True, label="Game")
 	egg_or_level1 = forms.ChoiceField(choices=[(1, "Egg"), (0, "Level 1")], required=True, label="Egg or Level 1")
-	allowed_generations = forms.MultipleChoiceField(choices=generation_choices, required=True, label="Allowed Generations")
+	# allowed_generations = forms.MultipleChoiceField(choices=generation_choices, required=True, label="Allowed Generations")
 	num_eggs = forms.IntegerField(min_value=1, max_value=50, required=True, label="Number of Eggs")
 
 import random
@@ -180,7 +179,7 @@ def get_random_objects(model, count):
 
 def saveGenView(request):
 	if request.POST:
-		form = CaptchaTestForm(request.POST)
+		form = CaptchaSaveGenForm(request.POST)
 		
 		# Validate the form: the captcha field will automatically
 		# check the input
@@ -237,7 +236,7 @@ def saveGenView(request):
 			
 
 	else:
-		form = CaptchaTestForm()
+		form = CaptchaSaveGenForm()
 
 	return render(request, 'pokepoll/save_gen.html', {'form': form})
 

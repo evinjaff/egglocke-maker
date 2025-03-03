@@ -17,8 +17,6 @@ COPY . /usr/src/app
 RUN python manage.py makemigrations
 RUN python manage.py migrate
 
-RUN echo yes | python manage.py collectstatic
-
 # set debug to false
 ENV DEBUG=True
 
