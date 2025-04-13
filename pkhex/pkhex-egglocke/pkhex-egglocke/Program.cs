@@ -11,6 +11,9 @@ using System;
 
 class Program {
 
+    private static readonly ManualResetEvent quitEvent = new ManualResetEvent(false);
+    private static readonly int defaultPort = 1235;
+
     public static void Main(string[] args)
     {
 
@@ -36,15 +39,20 @@ class Program {
             // Spin up the REST server
             using (var server = RestServerBuilder.UseDefaults().Build())
             {
-                server.Prefixes.Add("http://+:1235/");
+                server.Prefixes.Add($"http://+:{defaultPort}/");
 
                 server.Start();
 
-                Console.WriteLine("Press enter to stop the server");
-                Console.ReadLine();
+                Console.CancelKeyPress += (sender, eArgs) =>
+                {
+                    Console.WriteLine("Stopping API server...");
+                    server.Stop();
+                    quitEvent.Set();
+                    eArgs.Cancel = true;
+                };
 
-                // block the main thread forever
-                while (true) { }
+                Console.WriteLine($"API server running on port {defaultPort}, press Ctrl+C to stop.");
+                quitEvent.WaitOne();
 
             }
 

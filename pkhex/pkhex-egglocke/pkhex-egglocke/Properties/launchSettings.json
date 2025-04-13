@@ -1,0 +1,12 @@
+{
+  "profiles": {
+    "pkhexEgglocke API": {
+      "commandName": "Project",
+      "commandLineArgs": "-api"
+    },
+    "pkhexEgglocke CLI": {
+      "commandName": "Project",
+      "commandLineArgs": "-cli"
+    }
+  }
+}
